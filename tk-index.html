@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TK Veículos — Carros Revisados com Garantia</title>
+  <meta name="description" content="Estoque premium de seminovos em São João de Meriti. Financiamento em até 60x. Fale agora pelo WhatsApp.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #E85D04;
+      --orange-dark: #C44D03;
+      --orange-light: #F97316;
+      --orange-glow: rgba(232,93,4,0.35);
+      --black: #0A0A0A;
+      --dark: #111111;
+      --dark-2: #181818;
+      --dark-3: #222222;
+      --dark-4: #2C2C2C;
+      --white: #F5F5F5;
+      --white-dim: rgba(245,245,245,0.6);
+      --white-faint: rgba(245,245,245,0.07);
+      --border: rgba(245,245,245,0.08);
+      --border-o: rgba(232,93,4,0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; overflow-x: hidden; }
+
+    /* ══ LOADER ══ */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--black);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+      animation: loaderOut 0s 1.8s forwards;
+    }
+    @keyframes loaderOut { to { opacity:0; visibility:hidden; pointer-events:none; } }
+    .loader-logo { height: 72px; animation: pulse 1.2s ease-in-out infinite; }
+    .loader-bar-wrap { width: 220px; height: 2px; background: var(--dark-4); overflow: hidden; }
+    .loader-bar { height: 100%; width: 0%; background: var(--orange); animation: loadbar 1.6s ease forwards; box-shadow: 0 0 12px var(--orange-glow); }
+    .loader-txt { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 4px; color: var(--white-dim); text-transform: uppercase; font-weight: 600; }
+    @keyframes loadbar { to { width: 100%; } }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+    /* ══ NAV ══ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 68px;
+      display: flex; align-items: center; padding: 0 40px; gap: 0;
+      background: rgba(10,10,10,0.97); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+    .nav-logo { height: 36px; display: block; flex-shrink: 0; margin-right: auto; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; margin-right: 28px; }
+    .nav-links a { color: var(--white-dim); text-decoration: none; font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; transition: color .2s; white-space: nowrap; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: #fff; padding: 9px 20px; border-radius: 2px; font-family: 'Barlow Condensed'; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; white-space: nowrap; transition: background .2s; flex-shrink: 0; }
+    .nav-cta:hover { background: var(--orange-dark); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; flex-shrink: 0; margin-left: 20px; }
+    .nav-hamburger span { width: 22px; height: 2px; background: var(--white); border-radius: 2px; }
+
+    /* ══════════════════════════════════════════
+       VERTICAL SECTIONS (normal flow)
+    ══════════════════════════════════════════ */
+    .v-section { width: 100%; position: relative; overflow: hidden; }
+
+    /* ── P1: HERO ── */
+    .hero-wrap {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      background: var(--black);
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg') center/cover no-repeat;
+      filter: brightness(.15) saturate(.6);
+      transform: scale(1.04);
+      transition: transform 1.4s ease, filter 1.4s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); filter: brightness(.2) saturate(.7); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(10,10,10,.97) 38%, rgba(10,10,10,.6) 68%, rgba(232,93,4,.06) 100%); }
+    .hero-stripe { position: absolute; top: 0; right: 32%; width: 3px; height: 100%; background: linear-gradient(to bottom, transparent, var(--orange) 30%, var(--orange-light) 70%, transparent); opacity: .2; }
+    .hero-content { position: relative; z-index: 2; padding: 110px 80px 80px; max-width: 820px; }
+    .hero-tag { display: inline-flex; align-items: center; gap: 10px; border-left: 3px solid var(--orange); padding-left: 16px; font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--white-dim); font-weight: 600; margin-bottom: 32px; opacity: 0; transform: translateY(18px); animation: fadeUp .8s .4s ease forwards; }
+    .hero-tag::before { content: ''; width: 6px; height: 6px; background: var(--orange); border-radius: 50%; box-shadow: 0 0 8px var(--orange-glow); animation: blink 2s infinite; flex-shrink: 0; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+    .hero h1 { font-family: 'Bebas Neue'; font-size: clamp(52px, 8vw, 96px); line-height: .9; letter-spacing: 2px; opacity: 0; transform: translateY(22px); animation: fadeUp .9s .6s ease forwards; }
+    .hero h1 span { color: var(--orange); }
+    .hero h1 .out { -webkit-text-stroke: 1px rgba(245,245,245,.25); color: transparent; }
+    .hero-sub { margin-top: 24px; font-size: 16px; font-weight: 300; color: var(--white-dim); max-width: 460px; line-height: 1.7; opacity: 0; transform: translateY(18px); animation: fadeUp .9s .8s ease forwards; }
+    .hero-actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; opacity: 0; transform: translateY(18px); animation: fadeUp .9s 1s ease forwards; }
+    .hero-stats { display: flex; margin-top: 56px; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; width: fit-content; opacity: 0; transform: translateY(18px); animation: fadeUp .9s 1.2s ease forwards; }
+    .hero-stat { padding: 16px 28px; border-right: 1px solid var(--border); }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-num { font-family: 'Bebas Neue'; font-size: 34px; line-height: 1; }
+    .hero-stat-num em { color: var(--orange); font-style: normal; }
+    .hero-stat-lbl { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--white-dim); margin-top: 3px; }
+    .scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--white-dim); opacity: 0; animation: fadeUp 1s 1.6s ease forwards; }
+    .scroll-hint-arrow { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--orange), transparent); animation: scrollBounce 1.5s 2.2s ease infinite; }
+    @keyframes scrollBounce { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.3)} }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* ══════════════════════════════════════════
+       HORIZONTAL SCROLL ZONE
+    ══════════════════════════════════════════ */
+    #hzone-driver { /* height set by JS */ }
+    #hzone-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+    #hzone-track { display: flex; height: 100vh; will-change: transform; }
+    .hpanel { flex: 0 0 100vw; width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+    /* progress bar at bottom during horizontal scroll */
+    #hzone-progress { position: fixed; bottom: 0; left: 0; z-index: 500; height: 2px; background: var(--orange); width: 0%; transition: width .1s; box-shadow: 0 0 8px var(--orange-glow); display: none; }
+
+    /* panel indicator dots */
+    .hzone-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 600; display: flex; gap: 8px; display: none; }
+    .hzone-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(245,245,245,.2); border: 1px solid rgba(245,245,245,.3); cursor: pointer; transition: all .3s; }
+    .hzone-dot.active { background: var(--orange); border-color: var(--orange); width: 20px; border-radius: 3px; box-shadow: 0 0 6px var(--orange-glow); }
+
+    /* ── HP1: DESTAQUE ESTOQUE ── */
+    .hp-destaques { background: var(--dark); }
+    .hp-inner { height: 100%; padding: 88px 72px 48px; display: flex; flex-direction: column; }
+    .hp-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; flex-shrink: 0; }
+    .sec-label { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--orange); font-weight: 700; margin-bottom: 6px; }
+    .sec-title { font-family: 'Bebas Neue'; font-size: clamp(30px, 4vw, 48px); line-height: 1; }
+    .cards-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; flex: 1; align-content: start; }
+    .card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: transform .3s, box-shadow .3s, border-color .3s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 32px rgba(0,0,0,.6); border-color: var(--border-o); }
+    .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 16/9; }
+    .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .card:hover .card-img { transform: scale(1.06); }
+    .card-badge { position: absolute; top: 10px; left: 10px; background: var(--orange); color: #fff; font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; font-weight: 700; }
+    .card-km { position: absolute; bottom: 10px; right: 10px; background: rgba(10,10,10,.88); backdrop-filter: blur(4px); color: var(--white-dim); font-family: 'Barlow Condensed'; font-size: 11px; padding: 3px 10px; border-radius: 2px; font-weight: 600; }
+    .card-body { padding: 14px 16px; }
+    .card-brand { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); font-weight: 700; }
+    .card-model { font-family: 'Bebas Neue'; font-size: 20px; line-height: 1.1; margin-top: 3px; }
+    .card-versao { font-size: 11px; font-weight: 300; color: var(--white-dim); margin-top: 2px; }
+    .card-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-price { font-family: 'Bebas Neue'; font-size: 18px; }
+    .card-wpp { display: inline-flex; align-items: center; gap: 5px; background: #128C7E; color: #fff; padding: 6px 14px; border-radius: 2px; font-family: 'Barlow Condensed'; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: background .2s; }
+    .card-wpp:hover { background: #075E54; }
+    .card-skeleton { background: var(--dark-2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .skeleton-img { aspect-ratio: 16/9; background: var(--dark-3); }
+    .skeleton-body { padding: 14px 16px; }
+    .skeleton-line { height: 12px; background: var(--dark-3); border-radius: 2px; margin-bottom: 8px; animation: shimmer 1.5s infinite; }
+    .skeleton-line.w60{width:60%}.skeleton-line.w80{width:80%}
+    @keyframes shimmer{0%,100%{opacity:.4}50%{opacity:.9}}
+
+    /* ── HP2: FINANCIAMENTO ── */
+    .hp-fin { background: var(--black); }
+    .fin-split { height: 100%; display: flex; }
+    .fin-left { width: 52%; display: flex; flex-direction: column; justify-content: center; padding: 88px 64px; position: relative; overflow: hidden; }
+    .fin-left::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 60%, rgba(232,93,4,.04) 100%); pointer-events: none; }
+    .fin-left-lbl { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--orange); font-weight: 700; margin-bottom: 10px; }
+    .fin-left-title { font-family: 'Bebas Neue'; font-size: clamp(40px, 5.5vw, 72px); line-height: .9; }
+    .fin-left-title span { color: var(--orange); }
+    .fin-left-sub { font-size: 15px; font-weight: 300; color: var(--white-dim); line-height: 1.7; margin-top: 18px; max-width: 400px; }
+    .fin-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .fin-badge { background: var(--dark-3); border: 1px solid var(--border-o); padding: 7px 16px; border-radius: 2px; font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 1px; font-weight: 700; text-transform: uppercase; color: var(--white-dim); }
+    .fin-actions { margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .fin-right { flex: 1; background: var(--orange); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 72px 48px; text-align: center; position: relative; overflow: hidden; }
+    .fin-right::before { content: '60×'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue'; font-size: 240px; font-weight: 900; color: rgba(0,0,0,.1); line-height: 1; pointer-events: none; white-space: nowrap; }
+    .fin-right-tag { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; font-weight: 700; background: rgba(0,0,0,.2); padding: 6px 16px; border-radius: 2px; display: inline-block; margin-bottom: 20px; }
+    .fin-right-num { font-family: 'Bebas Neue'; font-size: clamp(72px, 11vw, 120px); line-height: .85; position: relative; z-index: 1; }
+    .fin-right-unit { font-family: 'Bebas Neue'; font-size: 24px; letter-spacing: 3px; opacity: .85; margin-top: 6px; position: relative; z-index: 1; }
+    .fin-right-desc { font-size: 13px; font-weight: 300; opacity: .85; line-height: 1.6; margin-top: 16px; max-width: 260px; position: relative; z-index: 1; }
+    .fin-right-cta { margin-top: 28px; position: relative; z-index: 1; }
+
+    /* ── HP3: INSTAGRAM / GARAGEM ── */
+    .hp-insta { background: var(--dark-2); }
+    .insta-inner { height: 100%; padding: 88px 72px 48px; display: flex; flex-direction: column; }
+    .insta-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; flex-shrink: 0; }
+    .insta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex: 1; align-content: start; }
+    .insta-post { position: relative; aspect-ratio: 1/1; overflow: hidden; border-radius: 4px; cursor: pointer; background: var(--dark-3); }
+    .insta-post img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s, filter .3s; filter: brightness(.85) saturate(.9); }
+    .insta-post:hover img { transform: scale(1.08); filter: brightness(1) saturate(1.1); }
+    .insta-post-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(232,93,4,.6) 0%, transparent 50%); opacity: 0; transition: opacity .3s; display: flex; align-items: center; justify-content: center; }
+    .insta-post:hover .insta-post-overlay { opacity: 1; }
+    .insta-play { width: 40px; height: 40px; background: rgba(255,255,255,.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .insta-play svg { width: 16px; height: 16px; fill: var(--orange); margin-left: 2px; }
+    .insta-post-label { position: absolute; bottom: 8px; left: 10px; right: 10px; font-family: 'Barlow Condensed'; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+    .insta-handle { display: flex; align-items: center; gap: 10px; font-family: 'Barlow Condensed'; font-size: 14px; letter-spacing: 1px; color: var(--white-dim); text-decoration: none; transition: color .2s; }
+    .insta-handle:hover { color: var(--white); }
+    .insta-handle svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* ══════════════════════════════════════════
+       VERTICAL SECTIONS (after horizontal zone)
+    ══════════════════════════════════════════ */
+
+    /* ── V2: CATEGORIAS ── */
+    .cats-section { background: var(--black); padding: 96px 80px; }
+    .cats-header { margin-bottom: 48px; }
+    .cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .cat-item { background: var(--dark); padding: 40px 32px; border: 1px solid var(--border); transition: background .3s, border-color .3s; cursor: default; position: relative; overflow: hidden; }
+    .cat-item:hover { background: var(--dark-2); border-color: var(--border-o); }
+    .cat-item::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--orange); transform: scaleX(0); transition: transform .3s; transform-origin: left; }
+    .cat-item:hover::before { transform: scaleX(1); }
+    .cat-icon { font-size: 28px; margin-bottom: 16px; }
+    .cat-name { font-family: 'Bebas Neue'; font-size: 28px; line-height: 1; }
+    .cat-examples { font-family: 'Barlow Condensed'; font-size: 12px; letter-spacing: 1px; color: var(--orange); text-transform: uppercase; margin-top: 6px; font-weight: 600; }
+    .cat-desc { font-size: 13px; font-weight: 300; color: var(--white-dim); line-height: 1.6; margin-top: 10px; }
+
+    /* ── V3: DEPOIMENTO + FAQ ── */
+    .dep-faq-section { background: var(--dark); padding: 96px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .dep-side {}
+    .dep-quote { background: var(--dark-2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 4px; padding: 32px; margin-top: 32px; position: relative; }
+    .dep-quote::before { content: '"'; position: absolute; top: 16px; right: 20px; font-family: 'Bebas Neue'; font-size: 64px; color: var(--orange); opacity: .15; line-height: 1; }
+    .dep-stars { color: #FFB800; font-size: 13px; letter-spacing: 2px; margin-bottom: 12px; }
+    .dep-text { font-size: 15px; font-weight: 300; line-height: 1.7; color: var(--white-dim); }
+    .dep-author { margin-top: 16px; font-family: 'Barlow Condensed'; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .dep-city { font-size: 12px; color: var(--white-dim); margin-top: 2px; }
+    .dep-more { margin-top: 16px; }
+    .dep-more-card { background: var(--dark-3); border: 1px solid var(--border); border-radius: 4px; padding: 20px 24px; margin-top: 12px; }
+    .faq-side {}
+    .faq-list { margin-top: 32px; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q { width: 100%; background: none; border: none; cursor: pointer; color: var(--white); text-align: left; padding: 20px 0; font-family: 'Barlow Condensed'; font-size: 17px; font-weight: 600; letter-spacing: .5px; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color .2s; }
+    .faq-q:hover { color: var(--orange); }
+    .faq-icon { font-size: 18px; color: var(--orange); transition: transform .3s; flex-shrink: 0; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .3s; font-size: 14px; font-weight: 300; color: var(--white-dim); line-height: 1.7; }
+    .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
+
+    /* ── V4: CTA FINAL ── */
+    .cta-final { background: var(--orange); padding: 96px 80px; display: flex; align-items: center; justify-content: space-between; gap: 48px; flex-wrap: wrap; position: relative; overflow: hidden; }
+    .cta-final::before { content: 'TK'; position: absolute; right: -30px; top: 50%; transform: translateY(-50%); font-family: 'Bebas Neue'; font-size: 320px; color: rgba(0,0,0,.1); line-height: 1; pointer-events: none; }
+    .cta-final-text h2 { font-family: 'Bebas Neue'; font-size: clamp(36px, 5vw, 60px); line-height: 1; }
+    .cta-final-text p { font-size: 16px; font-weight: 300; margin-top: 10px; opacity: .85; }
+    .cta-final-actions { display: flex; gap: 16px; flex-wrap: wrap; flex-shrink: 0; position: relative; z-index: 1; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--black); border-top: 1px solid var(--border); padding: 64px 80px 32px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-logo { height: 40px; margin-bottom: 14px; display: block; }
+    .footer-tagline { font-size: 13px; font-weight: 300; color: var(--white-dim); line-height: 1.6; }
+    .footer-col h4 { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); margin-bottom: 18px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a { color: var(--white-dim); text-decoration: none; font-size: 13px; font-weight: 300; transition: color .2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-col p { font-size: 13px; font-weight: 300; color: var(--white-dim); line-height: 1.8; }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-copy { font-size: 11px; color: var(--white-dim); }
+    .footer-social { display: flex; gap: 12px; }
+    .footer-social a { width: 34px; height: 34px; background: var(--dark-2); border: 1px solid var(--border); border-radius: 2px; display: flex; align-items: center; justify-content: center; color: var(--white-dim); text-decoration: none; font-size: 13px; transition: background .2s, color .2s, border-color .2s; }
+    .footer-social a:hover { background: var(--orange); color: #fff; border-color: var(--orange); }
+    .footer-social svg { width: 15px; height: 15px; fill: currentColor; }
+
+    /* ══ BUTTONS ══ */
+    .btn-orange { display: inline-flex; align-items: center; gap: 9px; background: var(--orange); color: #fff; padding: 14px 28px; border-radius: 2px; font-family: 'Barlow Condensed'; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background .2s, transform .2s, box-shadow .2s; box-shadow: 0 4px 18px rgba(232,93,4,.25); }
+    .btn-orange:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 8px 26px rgba(232,93,4,.4); }
+    .btn-outline { display: inline-flex; align-items: center; gap: 9px; background: transparent; color: var(--white); padding: 13px 28px; border-radius: 2px; border: 1px solid rgba(245,245,245,.22); font-family: 'Barlow Condensed'; font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: border-color .2s, background .2s; }
+    .btn-outline:hover { border-color: var(--white); background: var(--white-faint); }
+    .btn-white { display: inline-flex; align-items: center; gap: 9px; background: #fff; color: var(--orange); padding: 14px 28px; border-radius: 2px; font-family: 'Barlow Condensed'; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+
+    /* ══ WPP FLOAT ══ */
+    .wpp-float { position: fixed; bottom: 28px; right: 28px; z-index: 999; width: 58px; height: 58px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(37,211,102,.4); text-decoration: none; transition: transform .2s; opacity: 0; animation: wppPop .5s 2.2s ease forwards; }
+    .wpp-float:hover { transform: scale(1.1); }
+    .wpp-float svg { width: 26px; height: 26px; fill: #fff; }
+    @keyframes wppPop { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
+
+    /* ══ MOBILE ══ */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: fixed; inset: 68px 0 0 0; background: rgba(10,10,10,.98); padding: 36px 24px; gap: 22px; align-items: flex-start; z-index: 999; }
+      .nav-hamburger { display: flex; }
+      #hzone-driver { height: auto !important; }
+      #hzone-sticky { position: static; height: auto; overflow: visible; }
+      #hzone-track { flex-direction: column; height: auto; transform: none !important; }
+      .hpanel { width: 100%; height: auto; min-height: auto; }
+      #hzone-progress, .hzone-dots { display: none !important; }
+      .hero-content { padding: 96px 24px 60px; }
+      .hero-stats { flex-wrap: wrap; }
+      .hero-stat { padding: 14px 20px; }
+      .scroll-hint { display: none; }
+      .hp-inner, .insta-inner { padding: 72px 24px 48px; }
+      .cards-row { grid-template-columns: 1fr; }
+      .fin-split { flex-direction: column; }
+      .fin-left { width: 100%; padding: 60px 24px; }
+      .fin-right { padding: 56px 24px; }
+      .insta-grid { grid-template-columns: repeat(2,1fr); }
+      .cats-section { padding: 72px 24px; }
+      .cats-grid { grid-template-columns: 1fr 1fr; }
+      .dep-faq-section { padding: 72px 24px; grid-template-columns: 1fr; gap: 48px; }
+      .cta-final { padding: 72px 24px; flex-direction: column; }
+      footer { padding: 48px 24px 28px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+    @media (max-width: 480px) {
+      .cats-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .insta-grid { grid-template-columns: repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <img class="loader-logo" src="https://tkveiculos.com.br/Content/images/logo.png" alt="TK Veículos" onerror="this.style.display='none'">
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <p class="loader-txt">Carregando estoque...</p>
+</div>
+
+<!-- WPP FLOAT -->
+<a href="https://wa.me/5521973970330?text=Olá!%20Vi%20o%20site%20da%20TK%20Veículos%20e%20quero%20mais%20informações." class="wpp-float" target="_blank">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- PROGRESS + DOTS para zona horizontal -->
+<div id="hzone-progress"></div>
+<div class="hzone-dots" id="hzoneDots"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="tk-index.html"><img class="nav-logo" src="https://tkveiculos.com.br/Content/images/logo.png" alt="TK Veículos" onerror="this.alt='TK VEÍCULOS'"></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="tk-index.html">Início</a></li>
+    <li><a href="tk-estoque.html">Estoque</a></li>
+    <li><a href="#financiamento">Financiamento</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <a href="https://wa.me/5521973970330?text=Olá!%20Quero%20falar%20com%20um%20consultor." target="_blank" class="nav-cta">
+    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Falar Agora
+  </a>
+  <div class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ══════════════════════════════
+     V1: HERO (VERTICAL)
+══════════════════════════════ -->
+<section class="v-section">
+  <div class="hero-wrap">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-stripe"></div>
+    <div class="hero-content">
+      <div class="hero-tag">São João de Meriti · Rio de Janeiro</div>
+      <h1>
+        SEU PRÓXIMO<br>
+        <span>CARRO</span><br>
+        <span class="out">ESTÁ AQUI.</span>
+      </h1>
+      <p class="hero-sub">Estoque premium revisado, garantia real e financiamento aprovado em até 60× — 100% pelo WhatsApp, sem burocracia.</p>
+      <div class="hero-actions">
+        <a href="tk-estoque.html" class="btn-orange">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Ver Estoque
+        </a>
+        <a href="https://wa.me/5521973970330?text=Olá!%20Quero%20simular%20um%20financiamento." target="_blank" class="btn-outline">Simular Financiamento</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num">200<em>+</em></div><div class="hero-stat-lbl">Veículos em estoque</div></div>
+        <div class="hero-stat"><div class="hero-stat-num">60<em>×</em></div><div class="hero-stat-lbl">Parcelas disponíveis</div></div>
+        <div class="hero-stat"><div class="hero-stat-num"><em>+</em>10</div><div class="hero-stat-lbl">Anos no mercado</div></div>
+      </div>
+    </div>
+    <div class="scroll-hint">Role para ver<div class="scroll-hint-arrow"></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     HORIZONTAL SCROLL ZONE
+     (Estoque → Financiamento → Instagram)
+══════════════════════════════ -->
+<div id="hzone-driver">
+  <div id="hzone-sticky">
+    <div id="hzone-track">
+
+      <!-- HP1: DESTAQUES -->
+      <div class="hpanel hp-destaques">
+        <div class="hp-inner">
+          <div class="hp-header">
+            <div>
+              <p class="sec-label">Estoque em tempo real</p>
+              <h2 class="sec-title">DESTAQUES DA SEMANA</h2>
+            </div>
+            <a href="tk-estoque.html" class="btn-outline" style="flex-shrink:0">Ver Todos →</a>
+          </div>
+          <div class="cards-row" id="destaquesGrid">
+            <div class="card-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div>
+            <div class="card-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div>
+            <div class="card-skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line w60"></div><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HP2: FINANCIAMENTO -->
+      <div class="hpanel hp-fin" id="financiamento">
+        <div class="fin-split">
+          <div class="fin-left">
+            <p class="fin-left-lbl">Crédito facilitado</p>
+            <h2 class="fin-left-title">FINANCI-<br>AMENTO<br><span>RÁPIDO.</span></h2>
+            <p class="fin-left-sub">BV, Pan e outros grandes bancos. Simule pelo WhatsApp com dados básicos e receba aprovação na hora.</p>
+            <div class="fin-badges">
+              <span class="fin-badge">BV Financeira</span>
+              <span class="fin-badge">Banco Pan</span>
+              <span class="fin-badge">Até 60×</span>
+              <span class="fin-badge">Aprovação rápida</span>
+            </div>
+            <div class="fin-actions">
+              <a href="https://wa.me/5521973970330?text=Olá!%20Quero%20simular%20um%20financiamento%20de%20veículo." target="_blank" class="btn-orange">Simular no WhatsApp</a>
+              <a href="tk-estoque.html" class="btn-outline">Ver Estoque</a>
+            </div>
+          </div>
+          <div class="fin-right">
+            <div class="fin-right-tag">Parcelas disponíveis</div>
+            <div class="fin-right-num">60</div>
+            <div class="fin-right-unit">VEZES</div>
+            <p class="fin-right-desc">As melhores taxas do mercado. Aprovação em minutos diretamente pelo WhatsApp.</p>
+            <div class="fin-right-cta">
+              <a href="https://wa.me/5521973970330?text=Olá!%20Quero%20simular%20financiamento." target="_blank" class="btn-white">Simular Agora</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HP3: INSTAGRAM / GARAGEM -->
+      <div class="hpanel hp-insta">
+        <div class="insta-inner">
+          <div class="insta-header">
+            <div>
+              <p class="sec-label">Conteúdo real, carros reais</p>
+              <h2 class="sec-title">A GARAGEM EM AÇÃO.</h2>
+            </div>
+            <a href="https://www.instagram.com/tk.veiculosrj/" target="_blank" class="insta-handle">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              Seguir @tk.veiculosrj
+            </a>
+          </div>
+          <div class="insta-grid" id="instaGrid">
+            <!-- Posts preenchidos via JS com fotos do AutoCerto -->
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hzone-track -->
+  </div><!-- /hzone-sticky -->
+</div><!-- /hzone-driver -->
+
+<!-- ══════════════════════════════
+     V2: CATEGORIAS (VERTICAL)
+══════════════════════════════ -->
+<section class="v-section cats-section">
+  <div class="cats-header">
+    <p class="sec-label">Temos para todos os perfis</p>
+    <h2 class="sec-title" style="font-family:'Bebas Neue';font-size:clamp(28px,4vw,48px)">O CARRO CERTO<br>PARA VOCÊ.</h2>
+  </div>
+  <div class="cats-grid">
+    <div class="cat-item">
+      <div class="cat-icon">🚗</div>
+      <div class="cat-name">Compactos</div>
+      <div class="cat-examples">C3, Mobi, Ka, Up</div>
+      <p class="cat-desc">Econômicos, ágeis e perfeitos para o dia a dia. Ótimo custo-benefício e fáceis de financiar.</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon">🚙</div>
+      <div class="cat-name">SUVs & Picapes</div>
+      <div class="cat-examples">EcoSport, Ranger, Duster</div>
+      <p class="cat-desc">Versatilidade, espaço e potência para quem não abre mão de conforto e robustez.</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon">🏎️</div>
+      <div class="cat-name">Premium</div>
+      <div class="cat-examples">Corolla, Range Rover</div>
+      <p class="cat-desc">Veículos premium revisados com padrão de excelência. Sofisticação ao alcance do seu bolso.</p>
+    </div>
+    <div class="cat-item">
+      <div class="cat-icon">🏍️</div>
+      <div class="cat-name">Motos</div>
+      <div class="cat-examples">BMW GS, XMAX 250</div>
+      <p class="cat-desc">Motos premium revisadas e com garantia. Do urbano ao aventureiro — temos para todos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     V3: DEPOIMENTOS + FAQ (VERTICAL)
+══════════════════════════════ -->
+<section class="v-section dep-faq-section">
+  <div class="dep-side">
+    <p class="sec-label">Quem já comprou</p>
+    <h2 class="sec-title" style="font-family:'Bebas Neue';font-size:clamp(28px,4vw,48px)">O QUE FALAM<br>DA TK VEÍCULOS</h2>
+    <div class="dep-quote">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">Fechei negócio 100% pelo WhatsApp. Em menos de 2 horas meu Corolla estava liberado e revisado. A TK realmente entrega o que promete.</p>
+      <div class="dep-author">Rodrigo M.</div>
+      <div class="dep-city">Nova Iguaçu, RJ</div>
+    </div>
+    <div class="dep-more">
+      <div class="dep-more-card">
+        <div class="dep-stars" style="font-size:11px">★★★★★</div>
+        <p class="dep-text" style="font-size:13px">Meu carro antigo entrou como entrada, sem complicação. Processo transparente e saí com garantia inclusa.</p>
+        <div class="dep-author" style="font-size:12px;margin-top:10px">Aline C. — São João de Meriti</div>
+      </div>
+      <div class="dep-more-card">
+        <div class="dep-stars" style="font-size:11px">★★★★★</div>
+        <p class="dep-text" style="font-size:13px">Financiamento aprovado rapidinho pelo Whats. Atendimento da NINA foi incrível, tirou todas minhas dúvidas.</p>
+        <div class="dep-author" style="font-size:12px;margin-top:10px">Tiago F. — Belford Roxo</div>
+      </div>
+    </div>
+  </div>
+  <div class="faq-side">
+    <p class="sec-label">Dúvidas frequentes</p>
+    <h2 class="sec-title" style="font-family:'Bebas Neue';font-size:clamp(28px,4vw,48px)">PERGUNTAS<br>FREQUENTES</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Vocês aceitam meu carro na troca? <span class="faq-icon">+</span></button>
+        <p class="faq-a">Sim. Avaliamos seu veículo online e o valor é abatido direto na entrada ou financiamento. Processo sem compromisso, feito pelo WhatsApp.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Como funciona o financiamento? <span class="faq-icon">+</span></button>
+        <p class="faq-a">Trabalhamos com BV, Pan e outros bancos. Você simula pelo WhatsApp com dados básicos e recebe resposta em minutos. Parcelamos em até 60×.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Os veículos têm garantia? <span class="faq-icon">+</span></button>
+        <p class="faq-a">Sim. Todos os veículos passam por revisão completa e saem com garantia inclusa, sem custo adicional.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Onde fica a TK Veículos? <span class="faq-icon">+</span></button>
+        <p class="faq-a">Estamos na Av. Automóvel Clube, 518 — Vilar dos Teles, São João de Meriti - RJ. Seg–Sex das 8h às 18h, Sáb das 9h às 14h.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Consigo fechar sem ir à loja? <span class="faq-icon">+</span></button>
+        <p class="faq-a">Sim. Todo o processo de escolha, simulação e aprovação pode ser feito pelo WhatsApp. Você só vai à loja buscar o carro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     V4: CTA FINAL (VERTICAL)
+══════════════════════════════ -->
+<section class="v-section cta-final" id="contato">
+  <div class="cta-final-text">
+    <h2>VEM PRA MELHOR.<br>VEM PRA TK.</h2>
+    <p>Av. Automóvel Clube, 518 — Vilar dos Teles, São João de Meriti - RJ<br>Seg–Sex: 8h às 18h · Sáb: 9h às 14h</p>
+  </div>
+  <div class="cta-final-actions">
+    <a href="https://wa.me/5521973970330" target="_blank" class="btn-white">Falar no WhatsApp</a>
+    <a href="tk-estoque.html" class="btn-outline" style="border-color:rgba(255,255,255,.4);color:#fff">Ver Estoque</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <img class="footer-logo" src="https://tkveiculos.com.br/Content/images/logo.png" alt="TK Veículos" onerror="this.style.display='none'">
+      <p class="footer-tagline">Carros revisados com garantia.<br>Financiamento sem burocracia.<br>São João de Meriti há mais de 10 anos.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Menu</h4>
+      <ul>
+        <li><a href="tk-index.html">Início</a></li>
+        <li><a href="tk-estoque.html">Estoque</a></li>
+        <li><a href="#financiamento">Financiamento</a></li>
+        <li><a href="https://wa.me/5521973970330" target="_blank">WhatsApp</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Funcionamento</h4>
+      <p>Seg–Sex: 8h às 18h<br>Sábado: 9h às 14h<br>Domingo: Fechado</p>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <p>Av. Automóvel Clube, 518<br>Vilar dos Teles<br>São João de Meriti - RJ<br><br>(21) 2209-5342<br>(21) 97397-0330</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 TK Veículos — Todos os direitos reservados.</p>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/tk.veiculosrj/" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/tk.veiculosrj" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+      <a href="https://wa.me/5521973970330" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ════ CONFIG ════ */
+const CONFIG = { webhookEstoque: 'WEBHOOK_N8N_AQUI', whatsapp: '5521973970330', codigoUnidade: 1963 };
+
+/* ════ DEMO VEHICLES (reais do site deles) ════ */
+const DEMO = [
+  { CodigoVeiculo:2779601, Marca:'CITROËN', Modelo:'C3',          Versao:'1.0 Firefly Flex Live Pack Manual', AnoFab:2023, AnoMod:2024, KM:30000,  Preco:75999,  foto:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg' },
+  { CodigoVeiculo:3691198, Marca:'TOYOTA',  Modelo:'Corolla',     Versao:'2.0 XEI 16V Flex 4P Automático',   AnoFab:2017, AnoMod:2018, KM:80000,  Preco:109999, foto:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg' },
+  { CodigoVeiculo:4542618, Marca:'CHEVROLET',Modelo:'Onix Plus',  Versao:'1.0 Turbo Flex Premier Automático', AnoFab:2024, AnoMod:2024, KM:24000,  Preco:98999,  foto:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg' },
+];
+
+/* Fotos para seção Instagram (fotos reais do estoque) */
+const INSTA_FOTOS = [
+  { src:'https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg', label:'Range Rover Evoque' },
+  { src:'https://www.autocerto.com/fotos/1963/4352167/5_054240selo.jpg', label:'Ford Ranger 3.2' },
+  { src:'https://www.autocerto.com/fotos/1963/4020155/1_123151.jpg', label:'XMAX 250 ABS' },
+  { src:'https://www.autocerto.com/fotos/1963/4281772/2_020231.jpg', label:'BMW F800 GS' },
+  { src:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg', label:'Citroën C3' },
+  { src:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg', label:'Toyota Corolla' },
+  { src:'https://www.autocerto.com/fotos/1963/1664646/2_043158.jpg', label:'Fiat Mobi' },
+  { src:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg', label:'Onix Premier' },
+];
+
+function buildCard(v) {
+  const km = v.KM ? v.KM.toLocaleString('pt-BR')+' km' : 'N/I';
+  const preco = v.Preco ? 'R$ '+v.Preco.toLocaleString('pt-BR') : 'Sob consulta';
+  const txt = encodeURIComponent('Olá! Tenho interesse no '+v.Marca+' '+v.Modelo+' '+v.AnoFab+'/'+v.AnoMod+'. Cód: '+v.CodigoVeiculo);
+  return `<div class="card">
+    <div class="card-img-wrap">
+      <img class="card-img" src="${v.foto}" alt="${v.Marca} ${v.Modelo}" loading="lazy">
+      <span class="card-badge">${v.AnoFab}/${v.AnoMod}</span>
+      <span class="card-km">${km}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-brand">${v.Marca}</div>
+      <div class="card-model">${v.Modelo}</div>
+      <div class="card-versao">${v.Versao}</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-price">${preco}</div>
+      <a href="https://wa.me/${CONFIG.whatsapp}?text=${txt}" target="_blank" class="card-wpp">Tenho Interesse</a>
+    </div>
+  </div>`;
+}
+
+async function loadDestaques() {
+  let v = [];
+  if (CONFIG.webhookEstoque !== 'WEBHOOK_N8N_AQUI') {
+    try { const r = await fetch(CONFIG.webhookEstoque); const d = await r.json(); v = Array.isArray(d)?d:(d.veiculos||[]); } catch(e){}
+  }
+  if (!v.length) v = DEMO;
+  document.getElementById('destaquesGrid').innerHTML = v.slice(0,3).map(buildCard).join('');
+}
+
+function buildInstaGrid() {
+  const grid = document.getElementById('instaGrid');
+  grid.innerHTML = INSTA_FOTOS.map(p => `
+    <a class="insta-post" href="https://www.instagram.com/tk.veiculosrj/" target="_blank">
+      <img src="${p.src}" alt="${p.label}" loading="lazy">
+      <div class="insta-post-overlay">
+        <div class="insta-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="insta-post-label">${p.label}</div>
+    </a>`).join('');
+}
+
+/* ════ MIXED SCROLL ENGINE ════
+   Vertical → Horizontal (3 panels) → Vertical
+*/
+const isMobile = () => window.innerWidth <= 900;
+const track   = document.getElementById('hzone-track');
+const driver  = document.getElementById('hzone-driver');
+const sticky  = document.getElementById('hzone-sticky');
+const progBar = document.getElementById('hzone-progress');
+const dotsEl  = document.getElementById('hzoneDots');
+const NPANELS = 3; // number of horizontal panels
+
+let targetX = 0, curX = 0, raf = null;
+
+function setupDots() {
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < NPANELS; i++) {
+    const d = document.createElement('div');
+    d.className = 'hzone-dot' + (i===0?' active':'');
+    d.onclick = () => jumpToHPanel(i);
+    dotsEl.appendChild(d);
+  }
+}
+
+function updateDots(idx) {
+  dotsEl.querySelectorAll('.hzone-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+}
+
+function setDriverHeight() {
+  if (isMobile()) { driver.style.height = ''; return; }
+  driver.style.height = (NPANELS * 100) + 'vh';
+}
+
+function lerp(a, b, t) { return a + (b-a)*t; }
+
+function tick() {
+  curX = lerp(curX, targetX, 0.1);
+  track.style.transform = `translateX(${-curX}px)`;
+  if (Math.abs(curX - targetX) > 0.5) {
+    raf = requestAnimationFrame(tick);
+  } else {
+    curX = targetX;
+    track.style.transform = `translateX(${-curX}px)`;
+    raf = null;
+  }
+}
+
+function onScroll() {
+  if (isMobile()) return;
+
+  const scrollY   = window.scrollY;
+  const driverTop = driver.offsetTop;
+  const driverH   = driver.offsetHeight; // NPANELS * 100vh
+  const winH      = window.innerHeight;
+  const maxTravel = driverH - winH;       // scroll range inside the zone
+
+  // progress within horizontal zone (0..1)
+  const localScroll = scrollY - driverTop;
+  const progress    = Math.max(0, Math.min(1, localScroll / maxTravel));
+
+  const maxX  = (NPANELS - 1) * window.innerWidth;
+  targetX = progress * maxX;
+
+  const panelIdx = Math.min(NPANELS-1, Math.round(targetX / window.innerWidth));
+  updateDots(panelIdx);
+
+  // progress bar width
+  progBar.style.width = (progress * 100) + '%';
+
+  // show/hide dots & progressbar only when inside zone
+  const inZone = localScroll >= 0 && localScroll <= maxTravel;
+  progBar.style.display = inZone ? 'block' : 'none';
+  dotsEl.style.display  = inZone ? 'flex'  : 'none';
+
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+
+function jumpToHPanel(idx) {
+  if (isMobile()) return;
+  const driverTop = driver.offsetTop;
+  const maxTravel = driver.offsetHeight - window.innerHeight;
+  const progress  = idx / (NPANELS - 1);
+  window.scrollTo({ top: driverTop + progress * maxTravel, behavior: 'smooth' });
+}
+
+/* ════ FAQ ════ */
+window.toggleFaq = function(btn) {
+  const item = btn.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+};
+
+/* ════ INIT ════ */
+loadDestaques();
+buildInstaGrid();
+setDriverHeight();
+setupDots();
+document.getElementById('heroBg').classList.add('loaded');
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', () => { setDriverHeight(); }, { passive: true });
+window.toggleMenu = () => document.getElementById('navLinks').classList.toggle('open');
+</script>
+</body>
+</html>
