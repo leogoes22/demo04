@@ -169,6 +169,7 @@
       overflow: hidden;
       transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
       animation: fadeIn 0.4s ease both;
+      cursor: pointer;
     }
     .card:hover { transform: translateY(-5px); box-shadow: 0 10px 36px rgba(0,0,0,0.5); border-color: rgba(232,93,4,0.25); }
     @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
@@ -177,6 +178,18 @@
     .card:hover .card-img { transform: scale(1.05); }
     .card-badge { position: absolute; top: 12px; left: 12px; background: var(--red); color: #fff; font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
     .card-km { position: absolute; bottom: 12px; right: 12px; background: rgba(8,8,8,0.85); backdrop-filter: blur(4px); color: var(--white-dim); font-family: 'Barlow Condensed'; font-size: 12px; padding: 4px 10px; border-radius: 2px; }
+    .card-zoom-hint {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(232,93,4,0.0); transition: background 0.3s;
+    }
+    .card:hover .card-zoom-hint { background: rgba(232,93,4,0.08); }
+    .card-zoom-icon {
+      width: 44px; height: 44px; background: rgba(232,93,4,0.9); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.6); transition: opacity 0.3s, transform 0.3s;
+    }
+    .card:hover .card-zoom-icon { opacity: 1; transform: scale(1); }
+    .card-zoom-icon svg { width: 18px; height: 18px; fill: #fff; }
     .card-body { padding: 18px 20px; }
     .card-brand { font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); }
     .card-model { font-family: 'Bebas Neue'; font-size: 24px; line-height: 1.1; margin-top: 4px; }
@@ -219,6 +232,168 @@
     .load-more-btn:hover { background: var(--red); border-color: var(--red); }
     .load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+    /* ══════════════════════════════════════
+       MODAL
+    ══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 5000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-container {
+      background: var(--black-2);
+      border: 1px solid rgba(245,245,245,0.1);
+      border-radius: 6px;
+      width: 100%; max-width: 980px;
+      max-height: 92vh;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+    }
+    .modal-overlay.open .modal-container { transform: translateY(0) scale(1); }
+
+    .modal-close {
+      position: absolute; top: 14px; right: 14px; z-index: 20;
+      background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 36px; height: 36px; border-radius: 50%;
+      font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; line-height: 1;
+    }
+    .modal-close:hover { background: var(--red); }
+
+    /* Gallery */
+    .modal-gallery {
+      width: 55%; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      background: #0c0c0c;
+      position: relative;
+    }
+    .modal-main-photo {
+      flex: 1; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      background: #0a0a0a; overflow: hidden; min-height: 280px;
+    }
+    .modal-main-img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: opacity 0.18s ease;
+    }
+    .modal-main-img.fading { opacity: 0; }
+    .modal-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 40px; height: 40px; border-radius: 50%;
+      font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s; z-index: 3;
+      line-height: 1;
+    }
+    .modal-nav:hover { background: var(--red); transform: translateY(-50%) scale(1.08); }
+    .modal-nav.prev { left: 12px; }
+    .modal-nav.next { right: 12px; }
+    .modal-photo-counter {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.72); color: rgba(255,255,255,0.75);
+      font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 2px;
+      padding: 3px 14px; border-radius: 20px; white-space: nowrap;
+    }
+    .modal-thumbs {
+      display: flex; gap: 4px; padding: 8px;
+      overflow-x: auto; flex-shrink: 0;
+      background: #111; min-height: 72px; align-items: center;
+    }
+    .modal-thumbs::-webkit-scrollbar { height: 3px; }
+    .modal-thumbs::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+    .modal-thumb {
+      flex-shrink: 0; width: 76px; height: 56px;
+      border-radius: 3px; overflow: hidden; cursor: pointer;
+      border: 2px solid transparent; transition: border-color 0.2s, opacity 0.2s, transform 0.2s;
+      opacity: 0.5;
+    }
+    .modal-thumb:hover { opacity: 0.85; transform: scale(1.04); }
+    .modal-thumb.active { border-color: var(--red); opacity: 1; }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* Info */
+    .modal-info {
+      flex: 1; padding: 28px 28px 24px;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .modal-info::-webkit-scrollbar { width: 3px; }
+    .modal-info::-webkit-scrollbar-thumb { background: var(--red); }
+
+    .modal-ano-badge {
+      display: inline-block; background: var(--red); color: #fff;
+      font-family: 'Barlow Condensed'; font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; padding: 3px 12px; border-radius: 2px; margin-bottom: 10px;
+      width: fit-content;
+    }
+    .modal-brand-el {
+      font-family: 'Barlow Condensed'; font-size: 11px;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700;
+    }
+    .modal-model-el {
+      font-family: 'Bebas Neue'; font-size: 38px; line-height: 1; margin-top: 2px;
+    }
+    .modal-versao-el {
+      font-size: 12px; font-weight: 300; color: var(--white-dim);
+      margin-top: 4px; line-height: 1.5;
+    }
+    .modal-divider {
+      border: none; border-top: 1px solid var(--border); margin: 16px 0;
+    }
+    .modal-specs-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .modal-spec {
+      display: flex; flex-direction: column; gap: 2px;
+      background: var(--black-3); border: 1px solid var(--border);
+      border-radius: 3px; padding: 10px 14px;
+    }
+    .modal-spec-label {
+      font-family: 'Barlow Condensed'; font-size: 9px;
+      letter-spacing: 2.5px; text-transform: uppercase; color: var(--white-dim);
+    }
+    .modal-spec-val {
+      font-family: 'Barlow Condensed'; font-size: 16px; font-weight: 700;
+      color: var(--white); letter-spacing: 0.5px;
+    }
+    .modal-price-block { margin-top: 18px; }
+    .modal-price-label {
+      font-family: 'Barlow Condensed'; font-size: 9px;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--white-dim);
+    }
+    .modal-price-val {
+      font-family: 'Bebas Neue'; font-size: 44px; line-height: 1;
+      color: var(--white); margin-top: 2px;
+    }
+    .modal-actions { margin-top: auto; padding-top: 18px; }
+    .modal-wpp-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: #128C7E; color: #fff;
+      padding: 16px 24px; border-radius: 3px;
+      font-family: 'Barlow Condensed'; font-size: 14px;
+      font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; width: 100%;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 16px rgba(18,140,126,0.25);
+    }
+    .modal-wpp-btn:hover { background: #075E54; transform: translateY(-2px); }
+    .modal-wpp-btn svg { flex-shrink: 0; }
+    .modal-codigo {
+      margin-top: 10px; text-align: center;
+      font-family: 'Barlow Condensed'; font-size: 11px;
+      letter-spacing: 2px; color: rgba(245,245,245,0.3);
+      text-transform: uppercase;
+    }
+
     /* ── WPP FLOAT ── */
     .wpp-float { position: fixed; bottom: 28px; right: 28px; z-index: 999; width: 58px; height: 58px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(37,211,102,0.4); text-decoration: none; transition: transform 0.2s; }
     .wpp-float:hover { transform: scale(1.1); }
@@ -243,6 +418,15 @@
       .estoque-wrap { padding: 16px 24px 60px; }
       footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
     }
+    @media (max-width: 700px) {
+      .modal-container { flex-direction: column; max-height: 96vh; border-radius: 8px 8px 0 0; align-self: flex-end; margin-bottom: 0; }
+      .modal-gallery { width: 100%; }
+      .modal-main-photo { min-height: 220px; max-height: 260px; }
+      .modal-info { padding: 20px; }
+      .modal-model-el { font-size: 30px; }
+      .modal-price-val { font-size: 34px; }
+      .modal-overlay { padding: 0; align-items: flex-end; }
+    }
     @media (max-width: 500px) {
       .filter-group { min-width: 120px; }
     }
@@ -261,6 +445,64 @@
 <a href="https://wa.me/5521973970330?text=Olá!%20Estou%20no%20estoque%20da%20TK%20Veículos%20e%20quero%20mais%20informações." class="wpp-float" target="_blank">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="veiculoModal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-container">
+    <button class="modal-close" onclick="closeModal()" title="Fechar">✕</button>
+
+    <!-- Galeria -->
+    <div class="modal-gallery">
+      <div class="modal-main-photo">
+        <img class="modal-main-img" id="modalMainImg" src="" alt="Foto do veículo">
+        <button class="modal-nav prev" onclick="navPhoto(-1)">&#8249;</button>
+        <button class="modal-nav next" onclick="navPhoto(1)">&#8250;</button>
+        <div class="modal-photo-counter">
+          <span id="modalPhotoIdx">1</span> / <span id="modalPhotoTotal">1</span>
+        </div>
+      </div>
+      <div class="modal-thumbs" id="modalThumbs"></div>
+    </div>
+
+    <!-- Informações -->
+    <div class="modal-info">
+      <div class="modal-ano-badge" id="modalAnoBadge">2024/2024</div>
+      <div class="modal-brand-el" id="modalBrandEl"></div>
+      <div class="modal-model-el" id="modalModelEl"></div>
+      <div class="modal-versao-el" id="modalVersaoEl"></div>
+      <hr class="modal-divider">
+      <div class="modal-specs-grid">
+        <div class="modal-spec">
+          <span class="modal-spec-label">Quilometragem</span>
+          <span class="modal-spec-val" id="modalKmEl">–</span>
+        </div>
+        <div class="modal-spec">
+          <span class="modal-spec-label">Câmbio</span>
+          <span class="modal-spec-val" id="modalCambioEl">–</span>
+        </div>
+        <div class="modal-spec">
+          <span class="modal-spec-label">Combustível</span>
+          <span class="modal-spec-val" id="modalCombEl">–</span>
+        </div>
+        <div class="modal-spec">
+          <span class="modal-spec-label">Ano</span>
+          <span class="modal-spec-val" id="modalAnoEl">–</span>
+        </div>
+      </div>
+      <div class="modal-price-block">
+        <div class="modal-price-label">Preço</div>
+        <div class="modal-price-val" id="modalPrecoEl">–</div>
+      </div>
+      <div class="modal-actions">
+        <a class="modal-wpp-btn" id="modalWppBtn" href="#" target="_blank">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Tenho Interesse — WhatsApp
+        </a>
+        <div class="modal-codigo" id="modalCodigoEl"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -362,44 +604,182 @@
 
   /* ── DEMO DATA ── */
   const DEMO_VEICULOS = [
-    { CodigoVeiculo:2779601,  Marca:'CITROËN',    Modelo:'C3',          Versao:'1.0 Firefly Flex Live Pack Manual',        AnoFab:2023, AnoMod:2024, KM:30000,  Preco:75999,  Cambio:'Manual',     Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg' },
-    { CodigoVeiculo:3691198,  Marca:'TOYOTA',     Modelo:'Corolla',     Versao:'2.0 XEI 16V Flex 4P Automático',           AnoFab:2017, AnoMod:2018, KM:80000,  Preco:109999, Cambio:'Automático', Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg' },
-    { CodigoVeiculo:4542618,  Marca:'CHEVROLET',  Modelo:'Onix Plus',   Versao:'1.0 Turbo Flex Premier Automático',        AnoFab:2024, AnoMod:2024, KM:24000,  Preco:98999,  Cambio:'Automático', Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg' },
-    { CodigoVeiculo:3640088,  Marca:'LAND ROVER', Modelo:'Range Rover', Versao:'Evoque 2.0 Dynamic Tech 4WD Automático',   AnoFab:2013, AnoMod:2013, KM:80000,  Preco:99999,  Cambio:'Automático', Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg' },
-    { CodigoVeiculo:4352167,  Marca:'FORD',       Modelo:'Ranger',      Versao:'3.2 Limited 4x4 CD 20V Diesel Automático', AnoFab:2014, AnoMod:2015, KM:80000,  Preco:129999, Cambio:'Automático', Combustivel:'Diesel',   foto:'https://www.autocerto.com/fotos/1963/4352167/5_054240selo.jpg' },
-    { CodigoVeiculo:4020155,  Marca:'YAMAHA',     Modelo:'XMAX 250',    Versao:'ABS',                                       AnoFab:2022, AnoMod:2023, KM:10000,  Preco:30990,  Cambio:'Automático', Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/4020155/1_123151.jpg' },
-    { CodigoVeiculo:4281772,  Marca:'BMW',        Modelo:'F 800 GS',    Versao:'798cc',                                     AnoFab:2015, AnoMod:2015, KM:80000,  Preco:44990,  Cambio:'Manual',     Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/4281772/2_020231.jpg' },
-    { CodigoVeiculo:1664646,  Marca:'FIAT',       Modelo:'Mobi',        Versao:'1.0 EVO Flex Like. Manual',                AnoFab:2023, AnoMod:2024, KM:48000,  Preco:61999,  Cambio:'Manual',     Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/1664646/2_043158.jpg' }
+    { CodigoVeiculo:2779601,  Marca:'CITROËN',    Modelo:'C3',          Versao:'1.0 Firefly Flex Live Pack Manual',        AnoFab:2023, AnoMod:2024, KM:30000,  Preco:75999,  Cambio:'Manual',     Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg',  fotos:['https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg'] },
+    { CodigoVeiculo:3691198,  Marca:'TOYOTA',     Modelo:'Corolla',     Versao:'2.0 XEI 16V Flex 4P Automático',           AnoFab:2017, AnoMod:2018, KM:80000,  Preco:109999, Cambio:'Automático', Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg',  fotos:['https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg'] },
+    { CodigoVeiculo:4542618,  Marca:'CHEVROLET',  Modelo:'Onix Plus',   Versao:'1.0 Turbo Flex Premier Automático',        AnoFab:2024, AnoMod:2024, KM:24000,  Preco:98999,  Cambio:'Automático', Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg',  fotos:['https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg'] },
+    { CodigoVeiculo:3640088,  Marca:'LAND ROVER', Modelo:'Range Rover', Versao:'Evoque 2.0 Dynamic Tech 4WD Automático',   AnoFab:2013, AnoMod:2013, KM:80000,  Preco:99999,  Cambio:'Automático', Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg',  fotos:['https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg'] },
+    { CodigoVeiculo:4352167,  Marca:'FORD',       Modelo:'Ranger',      Versao:'3.2 Limited 4x4 CD 20V Diesel Automático', AnoFab:2014, AnoMod:2015, KM:80000,  Preco:129999, Cambio:'Automático', Combustivel:'Diesel',   foto:'https://www.autocerto.com/fotos/1963/4352167/5_054240selo.jpg', fotos:['https://www.autocerto.com/fotos/1963/4352167/5_054240selo.jpg'] },
+    { CodigoVeiculo:4020155,  Marca:'YAMAHA',     Modelo:'XMAX 250',    Versao:'ABS',                                       AnoFab:2022, AnoMod:2023, KM:10000,  Preco:30990,  Cambio:'Automático', Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/4020155/1_123151.jpg',  fotos:['https://www.autocerto.com/fotos/1963/4020155/1_123151.jpg'] },
+    { CodigoVeiculo:4281772,  Marca:'BMW',        Modelo:'F 800 GS',    Versao:'798cc',                                     AnoFab:2015, AnoMod:2015, KM:80000,  Preco:44990,  Cambio:'Manual',     Combustivel:'Gasolina', foto:'https://www.autocerto.com/fotos/1963/4281772/2_020231.jpg',  fotos:['https://www.autocerto.com/fotos/1963/4281772/2_020231.jpg'] },
+    { CodigoVeiculo:1664646,  Marca:'FIAT',       Modelo:'Mobi',        Versao:'1.0 EVO Flex Like. Manual',                AnoFab:2023, AnoMod:2024, KM:48000,  Preco:61999,  Cambio:'Manual',     Combustivel:'Flex',     foto:'https://www.autocerto.com/fotos/1963/1664646/2_043158.jpg',  fotos:['https://www.autocerto.com/fotos/1963/1664646/2_043158.jpg'] }
   ];
 
+  /* ── STATE ── */
   let allVeiculos = [];
-  let filtered = [];
+  let veiculoMap  = {};
+  let filtered    = [];
   let currentPage = 1;
-  let sortMode = 'recente';
+  let sortMode    = 'recente';
 
+  /* ── MODAL STATE ── */
+  let currentFotos   = [];
+  let currentFotoIdx = 0;
+
+  /* ════════════════════════════
+     MODAL
+  ════════════════════════════ */
+  function openModal(codigo) {
+    const v = veiculoMap[codigo];
+    if (!v) return;
+
+    // Fotos: usa array salvo pelo N8N ou fallback para foto única
+    currentFotos = (v.fotos && Array.isArray(v.fotos) && v.fotos.length > 0)
+      ? v.fotos
+      : [v.foto];
+    currentFotoIdx = 0;
+
+    // Foto principal
+    const mainImg = document.getElementById('modalMainImg');
+    mainImg.src = currentFotos[0];
+    mainImg.classList.remove('fading');
+    document.getElementById('modalPhotoIdx').textContent   = 1;
+    document.getElementById('modalPhotoTotal').textContent = currentFotos.length;
+
+    // Thumbnails
+    const thumbsEl = document.getElementById('modalThumbs');
+    thumbsEl.innerHTML = currentFotos.map((f, i) => `
+      <div class="modal-thumb ${i===0?'active':''}" onclick="selectThumb(${i})">
+        <img src="${f}" alt="Foto ${i+1}" loading="lazy"
+             onerror="this.parentElement.style.display='none'">
+      </div>`).join('');
+
+    // Esconde setas se só 1 foto
+    document.querySelector('#veiculoModal .modal-nav.prev').style.display = currentFotos.length > 1 ? 'flex' : 'none';
+    document.querySelector('#veiculoModal .modal-nav.next').style.display = currentFotos.length > 1 ? 'flex' : 'none';
+
+    // Preenche info
+    document.getElementById('modalAnoBadge').textContent = `${v.AnoFab}/${v.AnoMod}`;
+    document.getElementById('modalBrandEl').textContent  = v.Marca;
+    document.getElementById('modalModelEl').textContent  = v.Modelo;
+    document.getElementById('modalVersaoEl').textContent = v.Versao;
+    document.getElementById('modalAnoEl').textContent    = `${v.AnoFab}/${v.AnoMod}`;
+    document.getElementById('modalKmEl').textContent     = v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I';
+    document.getElementById('modalCambioEl').textContent = v.Cambio || 'N/I';
+    document.getElementById('modalCombEl').textContent   = v.Combustivel || 'N/I';
+    document.getElementById('modalPrecoEl').textContent  = v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta';
+    document.getElementById('modalCodigoEl').textContent = `Código: #${v.CodigoVeiculo}`;
+
+    // Mensagem WhatsApp completa
+    const msg = [
+      `Olá! Tenho interesse no veículo abaixo:`,
+      ``,
+      `🚗 *${v.Marca} ${v.Modelo}*`,
+      `📋 ${v.Versao}`,
+      `📅 Ano: ${v.AnoFab}/${v.AnoMod}`,
+      `📍 KM: ${v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I'}`,
+      `⚙️ Câmbio: ${v.Cambio || 'N/I'}`,
+      `⛽ Combustível: ${v.Combustivel || 'N/I'}`,
+      `💰 Preço: ${v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta'}`,
+      `🔖 Código: #${v.CodigoVeiculo}`,
+      ``,
+      `Poderia me dar mais informações?`
+    ].join('\n');
+
+    document.getElementById('modalWppBtn').href =
+      `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+
+    // Abre modal
+    document.getElementById('veiculoModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('veiculoModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleModalOverlayClick(e) {
+    if (e.target === document.getElementById('veiculoModal')) closeModal();
+  }
+
+  function navPhoto(dir) {
+    selectThumb((currentFotoIdx + dir + currentFotos.length) % currentFotos.length);
+  }
+
+  function selectThumb(idx) {
+    currentFotoIdx = idx;
+    const mainImg = document.getElementById('modalMainImg');
+    mainImg.classList.add('fading');
+    setTimeout(() => {
+      mainImg.src = currentFotos[idx];
+      mainImg.classList.remove('fading');
+    }, 180);
+    document.querySelectorAll('#veiculoModal .modal-thumb').forEach((t, i) => {
+      t.classList.toggle('active', i === idx);
+    });
+    document.getElementById('modalPhotoIdx').textContent = idx + 1;
+
+    // Scroll thumbnail into view
+    const thumbEl = document.querySelectorAll('#veiculoModal .modal-thumb')[idx];
+    if (thumbEl) thumbEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  // Teclado: setas e ESC
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('veiculoModal').classList.contains('open')) return;
+    if (e.key === 'Escape')     closeModal();
+    if (e.key === 'ArrowLeft')  navPhoto(-1);
+    if (e.key === 'ArrowRight') navPhoto(1);
+  });
+
+  /* ════════════════════════════
+     CARD BUILDER
+  ════════════════════════════ */
   function buildCard(v, delay = 0) {
-    const km = v.KM ? `${v.KM.toLocaleString('pt-BR')} km` : 'N/I';
+    const km    = v.KM ? `${v.KM.toLocaleString('pt-BR')} km` : 'N/I';
     const preco = v.Preco ? `R$ ${v.Preco.toLocaleString('pt-BR')}` : 'Sob consulta';
-    const wppTxt = encodeURIComponent(`Olá! Tenho interesse no ${v.Marca} ${v.Modelo} ${v.AnoFab}/${v.AnoMod} (Código: ${v.CodigoVeiculo}). Pode me passar mais informações?`);
+
+    const msg = [
+      `Olá! Tenho interesse no veículo abaixo:`,
+      ``,
+      `🚗 *${v.Marca} ${v.Modelo}*`,
+      `📋 ${v.Versao}`,
+      `📅 Ano: ${v.AnoFab}/${v.AnoMod}`,
+      `📍 KM: ${v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I'}`,
+      `⚙️ Câmbio: ${v.Cambio || 'N/I'}`,
+      `⛽ Combustível: ${v.Combustivel || 'N/I'}`,
+      `💰 Preço: ${v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta'}`,
+      `🔖 Código: #${v.CodigoVeiculo}`,
+      ``,
+      `Poderia me dar mais informações?`
+    ].join('\n');
+
+    const wppUrl = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+
     return `
-      <div class="card" style="animation-delay:${delay}ms">
+      <div class="card" style="animation-delay:${delay}ms" onclick="handleCardClick(event, ${v.CodigoVeiculo})">
         <div class="card-img-wrap">
-          <img class="card-img" src="${v.foto}" alt="${v.Marca} ${v.Modelo}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%231a1a1a%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%22200%22 y=%22130%22 fill=%22%23444%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2216%22%3ESem foto%3C/text%3E%3C/svg%3E'">
+          <img class="card-img" src="${v.foto}" alt="${v.Marca} ${v.Modelo}" loading="lazy" onerror="this.onerror=null;this.style.opacity='0'">
           <span class="card-badge">${v.AnoFab}/${v.AnoMod}</span>
           <span class="card-km">${km}</span>
+          <div class="card-zoom-hint">
+            <div class="card-zoom-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm-2 0a4 4 0 1 0-8 0 4 4 0 0 0 8 0z" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+            </div>
+          </div>
         </div>
         <div class="card-body">
           <div class="card-brand">${v.Marca}</div>
           <div class="card-model">${v.Modelo}</div>
           <div class="card-versao">${v.Versao}</div>
           <div class="card-tags">
-            <span class="card-tag">${v.Cambio}</span>
-            <span class="card-tag">${v.Combustivel}</span>
+            <span class="card-tag">${v.Cambio || 'N/I'}</span>
+            <span class="card-tag">${v.Combustivel || 'N/I'}</span>
           </div>
         </div>
         <div class="card-footer">
           <div class="card-price">${preco}</div>
-          <a href="https://wa.me/${CONFIG.whatsapp}?text=${wppTxt}" target="_blank" class="card-wpp">
+          <a href="${wppUrl}" target="_blank" class="card-wpp" onclick="event.stopPropagation()">
             <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
             Tenho Interesse
           </a>
@@ -407,11 +787,19 @@
       </div>`;
   }
 
+  function handleCardClick(event, codigo) {
+    // Não abre modal se clicou no botão WhatsApp
+    if (event.target.closest('.card-wpp')) return;
+    openModal(codigo);
+  }
+
+  /* ════════════════════════════
+     GRID
+  ════════════════════════════ */
   function renderGrid() {
-    const grid = document.getElementById('estoqueGrid');
-    const start = 0;
-    const end = currentPage * CONFIG.pageSize;
-    const slice = filtered.slice(start, end);
+    const grid  = document.getElementById('estoqueGrid');
+    const end   = currentPage * CONFIG.pageSize;
+    const slice = filtered.slice(0, end);
 
     if (!filtered.length) {
       grid.innerHTML = `
@@ -419,7 +807,7 @@
           <div class="empty-icon">🔍</div>
           <h3 class="empty-title">Nenhum veículo encontrado</h3>
           <p class="empty-text">Tente outros filtros ou fale com a gente no WhatsApp.</p>
-          <a href="https://wa.me/${CONFIG.whatsapp}?text=Olá! Não encontrei o veículo que procuro no site. Pode me ajudar?" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#128C7E;color:#fff;padding:12px 28px;border-radius:2px;font-family:'Barlow Condensed';font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">Falar no WhatsApp</a>
+          <a href="https://wa.me/${CONFIG.whatsapp}?text=Olá!%20Não%20encontrei%20o%20veículo%20que%20procuro%20no%20site.%20Pode%20me%20ajudar?" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#128C7E;color:#fff;padding:12px 28px;border-radius:2px;font-family:'Barlow Condensed';font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">Falar no WhatsApp</a>
         </div>`;
       document.getElementById('loadMoreWrap').style.display = 'none';
       return;
@@ -429,27 +817,27 @@
 
     const hasMore = filtered.length > end;
     document.getElementById('loadMoreWrap').style.display = hasMore ? 'block' : 'none';
-    document.getElementById('visibleCount').textContent = slice.length;
+    document.getElementById('visibleCount').textContent   = slice.length;
   }
 
-  function loadMore() {
-    currentPage++;
-    renderGrid();
-  }
+  function loadMore() { currentPage++; renderGrid(); }
 
+  /* ════════════════════════════
+     FILTROS
+  ════════════════════════════ */
   function applyFilters() {
-    const marca = document.getElementById('filterMarca').value;
+    const marca  = document.getElementById('filterMarca').value;
     const cambio = document.getElementById('filterCambio').value;
     const anoMin = parseInt(document.getElementById('filterAno').value) || 0;
     const search = document.getElementById('filterSearch').value.toLowerCase().trim();
 
     filtered = allVeiculos.filter(v => {
-      if (marca && v.Marca !== marca) return false;
-      if (cambio && v.Cambio !== cambio) return false;
-      if (anoMin && v.AnoMod < anoMin) return false;
+      if (marca  && v.Marca   !== marca)    return false;
+      if (cambio && v.Cambio  !== cambio)   return false;
+      if (anoMin && v.AnoMod  < anoMin)     return false;
       if (search) {
-        const haystack = `${v.Marca} ${v.Modelo} ${v.Versao}`.toLowerCase();
-        if (!haystack.includes(search)) return false;
+        const hay = `${v.Marca} ${v.Modelo} ${v.Versao}`.toLowerCase();
+        if (!hay.includes(search)) return false;
       }
       return true;
     });
@@ -460,12 +848,8 @@
   }
 
   function applySortToFiltered() {
-    if (sortMode === 'km_asc') {
-      filtered.sort((a,b) => (a.KM||999999) - (b.KM||999999));
-    } else if (sortMode === 'ano_desc') {
-      filtered.sort((a,b) => b.AnoMod - a.AnoMod);
-    }
-    // 'recente' = original order
+    if (sortMode === 'km_asc')   filtered.sort((a,b) => (a.KM||999999) - (b.KM||999999));
+    if (sortMode === 'ano_desc') filtered.sort((a,b) => b.AnoMod - a.AnoMod);
   }
 
   function sortBy(mode, btn) {
@@ -478,9 +862,9 @@
   }
 
   function resetFilters() {
-    document.getElementById('filterMarca').value = '';
+    document.getElementById('filterMarca').value  = '';
     document.getElementById('filterCambio').value = '';
-    document.getElementById('filterAno').value = '';
+    document.getElementById('filterAno').value    = '';
     document.getElementById('filterSearch').value = '';
     filtered = [...allVeiculos];
     currentPage = 1;
@@ -489,7 +873,7 @@
 
   function populateFilters() {
     const marcas = [...new Set(allVeiculos.map(v => v.Marca))].sort();
-    const anos = [...new Set(allVeiculos.map(v => v.AnoMod))].sort((a,b) => b-a);
+    const anos   = [...new Set(allVeiculos.map(v => v.AnoMod))].sort((a,b) => b-a);
 
     const marcaEl = document.getElementById('filterMarca');
     marcas.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; marcaEl.appendChild(o); });
@@ -497,24 +881,29 @@
     const anoEl = document.getElementById('filterAno');
     anos.forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; anoEl.appendChild(o); });
 
-    document.getElementById('countNum').textContent = allVeiculos.length;
+    document.getElementById('countNum').textContent    = allVeiculos.length;
     document.getElementById('visibleCount').textContent = allVeiculos.length;
   }
 
+  /* ════════════════════════════
+     LOAD DATA
+  ════════════════════════════ */
   async function loadEstoque() {
     let veiculos = [];
-
-    if (CONFIG.webhookEstoque !== 'WEBHOOK_N8N_AQUI') {
-      try {
-        const res = await fetch(CONFIG.webhookEstoque);
-        const data = await res.json();
-        veiculos = Array.isArray(data) ? data : (data.veiculos || []);
-      } catch(e) { veiculos = []; }
-    }
+    try {
+      const res  = await fetch(CONFIG.webhookEstoque);
+      const data = await res.json();
+      veiculos = Array.isArray(data) ? data : (data.veiculos || []);
+    } catch(e) { veiculos = []; }
 
     if (!veiculos.length) veiculos = DEMO_VEICULOS;
 
     allVeiculos = veiculos;
+
+    // Monta mapa por codigo para acesso rápido no modal
+    veiculoMap = {};
+    allVeiculos.forEach(v => { veiculoMap[v.CodigoVeiculo] = v; });
+
     filtered = [...allVeiculos];
     populateFilters();
     renderGrid();
