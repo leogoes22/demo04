@@ -60,25 +60,11 @@
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; flex-shrink: 0; margin-left: 20px; }
     .nav-hamburger span { width: 22px; height: 2px; background: var(--white); border-radius: 2px; }
 
-    /* ══════════════════════════════════════════
-       VERTICAL SECTIONS (normal flow)
-    ══════════════════════════════════════════ */
     .v-section { width: 100%; position: relative; overflow: hidden; }
 
-    /* ── P1: HERO ── */
-    .hero-wrap {
-      min-height: 100vh;
-      display: flex; align-items: center;
-      background: var(--black);
-      position: relative; overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background: url('https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg') center/cover no-repeat;
-      filter: brightness(.15) saturate(.6);
-      transform: scale(1.04);
-      transition: transform 1.4s ease, filter 1.4s ease;
-    }
+    /* ── HERO ── */
+    .hero-wrap { min-height: 100vh; display: flex; align-items: center; background: var(--black); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; background: url('https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg') center/cover no-repeat; filter: brightness(.15) saturate(.6); transform: scale(1.04); transition: transform 1.4s ease, filter 1.4s ease; }
     .hero-bg.loaded { transform: scale(1); filter: brightness(.2) saturate(.7); }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(10,10,10,.97) 38%, rgba(10,10,10,.6) 68%, rgba(232,93,4,.06) 100%); }
     .hero-stripe { position: absolute; top: 0; right: 32%; width: 3px; height: 100%; background: linear-gradient(to bottom, transparent, var(--orange) 30%, var(--orange-light) 70%, transparent); opacity: .2; }
@@ -102,18 +88,12 @@
     @keyframes scrollBounce { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.3)} }
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-    /* ══════════════════════════════════════════
-       HORIZONTAL SCROLL ZONE
-    ══════════════════════════════════════════ */
-    #hzone-driver { /* height set by JS */ }
+    /* ══ HORIZONTAL SCROLL ZONE ══ */
+    #hzone-driver { }
     #hzone-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
     #hzone-track { display: flex; height: 100vh; will-change: transform; }
     .hpanel { flex: 0 0 100vw; width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-
-    /* progress bar at bottom during horizontal scroll */
     #hzone-progress { position: fixed; bottom: 0; left: 0; z-index: 500; height: 2px; background: var(--orange); width: 0%; transition: width .1s; box-shadow: 0 0 8px var(--orange-glow); display: none; }
-
-    /* panel indicator dots */
     .hzone-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 600; display: flex; gap: 8px; display: none; }
     .hzone-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(245,245,245,.2); border: 1px solid rgba(245,245,245,.3); cursor: pointer; transition: all .3s; }
     .hzone-dot.active { background: var(--orange); border-color: var(--orange); width: 20px; border-radius: 3px; box-shadow: 0 0 6px var(--orange-glow); }
@@ -125,13 +105,20 @@
     .sec-label { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--orange); font-weight: 700; margin-bottom: 6px; }
     .sec-title { font-family: 'Bebas Neue'; font-size: clamp(30px, 4vw, 48px); line-height: 1; }
     .cards-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; flex: 1; align-content: start; }
-    .card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: transform .3s, box-shadow .3s, border-color .3s; }
+
+    /* ── CARD (index) ── */
+    .card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: transform .3s, box-shadow .3s, border-color .3s; cursor: pointer; }
     .card:hover { transform: translateY(-5px); box-shadow: 0 10px 32px rgba(0,0,0,.6); border-color: var(--border-o); }
     .card-img-wrap { position: relative; overflow: hidden; aspect-ratio: 16/9; }
     .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
     .card:hover .card-img { transform: scale(1.06); }
     .card-badge { position: absolute; top: 10px; left: 10px; background: var(--orange); color: #fff; font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; font-weight: 700; }
     .card-km { position: absolute; bottom: 10px; right: 10px; background: rgba(10,10,10,.88); backdrop-filter: blur(4px); color: var(--white-dim); font-family: 'Barlow Condensed'; font-size: 11px; padding: 3px 10px; border-radius: 2px; font-weight: 600; }
+    .card-zoom-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(232,93,4,0.0); transition: background 0.3s; }
+    .card:hover .card-zoom-hint { background: rgba(232,93,4,0.08); }
+    .card-zoom-icon { width: 44px; height: 44px; background: rgba(232,93,4,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.6); transition: opacity 0.3s, transform 0.3s; }
+    .card:hover .card-zoom-icon { opacity: 1; transform: scale(1); }
+    .card-zoom-icon svg { width: 18px; height: 18px; }
     .card-body { padding: 14px 16px; }
     .card-brand { font-family: 'Barlow Condensed'; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); font-weight: 700; }
     .card-model { font-family: 'Bebas Neue'; font-size: 20px; line-height: 1.1; margin-top: 3px; }
@@ -167,7 +154,7 @@
     .fin-right-desc { font-size: 13px; font-weight: 300; opacity: .85; line-height: 1.6; margin-top: 16px; max-width: 260px; position: relative; z-index: 1; }
     .fin-right-cta { margin-top: 28px; position: relative; z-index: 1; }
 
-    /* ── HP3: INSTAGRAM / GARAGEM ── */
+    /* ── HP3: INSTAGRAM ── */
     .hp-insta { background: var(--dark-2); }
     .insta-inner { height: 100%; padding: 88px 72px 48px; display: flex; flex-direction: column; }
     .insta-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; flex-shrink: 0; }
@@ -184,10 +171,6 @@
     .insta-handle:hover { color: var(--white); }
     .insta-handle svg { width: 18px; height: 18px; fill: currentColor; }
 
-    /* ══════════════════════════════════════════
-       VERTICAL SECTIONS (after horizontal zone)
-    ══════════════════════════════════════════ */
-
     /* ── V2: CATEGORIAS ── */
     .cats-section { background: var(--black); padding: 96px 80px; }
     .cats-header { margin-bottom: 48px; }
@@ -203,7 +186,6 @@
 
     /* ── V3: DEPOIMENTO + FAQ ── */
     .dep-faq-section { background: var(--dark); padding: 96px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
-    .dep-side {}
     .dep-quote { background: var(--dark-2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 4px; padding: 32px; margin-top: 32px; position: relative; }
     .dep-quote::before { content: '"'; position: absolute; top: 16px; right: 20px; font-family: 'Bebas Neue'; font-size: 64px; color: var(--orange); opacity: .15; line-height: 1; }
     .dep-stars { color: #FFB800; font-size: 13px; letter-spacing: 2px; margin-bottom: 12px; }
@@ -212,7 +194,6 @@
     .dep-city { font-size: 12px; color: var(--white-dim); margin-top: 2px; }
     .dep-more { margin-top: 16px; }
     .dep-more-card { background: var(--dark-3); border: 1px solid var(--border); border-radius: 4px; padding: 20px 24px; margin-top: 12px; }
-    .faq-side {}
     .faq-list { margin-top: 32px; }
     .faq-item { border-bottom: 1px solid var(--border); }
     .faq-q { width: 100%; background: none; border: none; cursor: pointer; color: var(--white); text-align: left; padding: 20px 0; font-family: 'Barlow Condensed'; font-size: 17px; font-weight: 600; letter-spacing: .5px; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color .2s; }
@@ -261,6 +242,77 @@
     .wpp-float svg { width: 26px; height: 26px; fill: #fff; }
     @keyframes wppPop { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
 
+    /* ══════════════════════════════════════
+       MODAL
+    ══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 5000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal-container {
+      background: var(--dark-2);
+      border: 1px solid rgba(245,245,245,0.1);
+      border-radius: 6px;
+      width: 100%; max-width: 980px;
+      max-height: 92vh;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.35s cubic-bezier(.22,.68,0,1.2);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.8);
+    }
+    .modal-overlay.open .modal-container { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px; z-index: 20;
+      background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; width: 36px; height: 36px; border-radius: 50%;
+      font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; line-height: 1;
+    }
+    .modal-close:hover { background: var(--orange); }
+    .modal-gallery { width: 55%; flex-shrink: 0; display: flex; flex-direction: column; background: #0c0c0c; position: relative; }
+    .modal-main-photo { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #0a0a0a; overflow: hidden; min-height: 280px; }
+    .modal-main-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.18s ease; }
+    .modal-main-img.fading { opacity: 0; }
+    .modal-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, transform 0.2s; z-index: 3; line-height: 1; }
+    .modal-nav:hover { background: var(--orange); transform: translateY(-50%) scale(1.08); }
+    .modal-nav.prev { left: 12px; }
+    .modal-nav.next { right: 12px; }
+    .modal-photo-counter { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.72); color: rgba(255,255,255,0.75); font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 2px; padding: 3px 14px; border-radius: 20px; white-space: nowrap; }
+    .modal-thumbs { display: flex; gap: 4px; padding: 8px; overflow-x: auto; flex-shrink: 0; background: #111; min-height: 72px; align-items: center; }
+    .modal-thumbs::-webkit-scrollbar { height: 3px; }
+    .modal-thumbs::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
+    .modal-thumb { flex-shrink: 0; width: 76px; height: 56px; border-radius: 3px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, opacity 0.2s, transform 0.2s; opacity: 0.5; }
+    .modal-thumb:hover { opacity: 0.85; transform: scale(1.04); }
+    .modal-thumb.active { border-color: var(--orange); opacity: 1; }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .modal-info { flex: 1; padding: 28px 28px 24px; display: flex; flex-direction: column; overflow-y: auto; }
+    .modal-info::-webkit-scrollbar { width: 3px; }
+    .modal-info::-webkit-scrollbar-thumb { background: var(--orange); }
+    .modal-ano-badge { display: inline-block; background: var(--orange); color: #fff; font-family: 'Barlow Condensed'; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 3px 12px; border-radius: 2px; margin-bottom: 10px; width: fit-content; }
+    .modal-brand-el { font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); font-weight: 700; }
+    .modal-model-el { font-family: 'Bebas Neue'; font-size: 38px; line-height: 1; margin-top: 2px; }
+    .modal-versao-el { font-size: 12px; font-weight: 300; color: var(--white-dim); margin-top: 4px; line-height: 1.5; }
+    .modal-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .modal-specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-spec { display: flex; flex-direction: column; gap: 2px; background: var(--dark-3); border: 1px solid var(--border); border-radius: 3px; padding: 10px 14px; }
+    .modal-spec-label { font-family: 'Barlow Condensed'; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--white-dim); }
+    .modal-spec-val { font-family: 'Barlow Condensed'; font-size: 16px; font-weight: 700; color: var(--white); letter-spacing: 0.5px; }
+    .modal-price-block { margin-top: 18px; }
+    .modal-price-label { font-family: 'Barlow Condensed'; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--white-dim); }
+    .modal-price-val { font-family: 'Bebas Neue'; font-size: 44px; line-height: 1; color: var(--white); margin-top: 2px; }
+    .modal-actions { margin-top: auto; padding-top: 18px; }
+    .modal-wpp-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: #128C7E; color: #fff; padding: 16px 24px; border-radius: 3px; font-family: 'Barlow Condensed'; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; width: 100%; transition: background 0.2s, transform 0.2s; box-shadow: 0 4px 16px rgba(18,140,126,0.25); }
+    .modal-wpp-btn:hover { background: #075E54; transform: translateY(-2px); }
+    .modal-codigo { margin-top: 10px; text-align: center; font-family: 'Barlow Condensed'; font-size: 11px; letter-spacing: 2px; color: rgba(245,245,245,0.3); text-transform: uppercase; }
+
     /* ══ MOBILE ══ */
     @media (max-width: 900px) {
       nav { padding: 0 20px; }
@@ -289,6 +341,15 @@
       footer { padding: 48px 24px 28px; }
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
     }
+    @media (max-width: 700px) {
+      .modal-container { flex-direction: column; max-height: 96vh; border-radius: 8px 8px 0 0; align-self: flex-end; margin-bottom: 0; }
+      .modal-gallery { width: 100%; }
+      .modal-main-photo { min-height: 220px; max-height: 260px; }
+      .modal-info { padding: 20px; }
+      .modal-model-el { font-size: 30px; }
+      .modal-price-val { font-size: 34px; }
+      .modal-overlay { padding: 0; align-items: flex-end; }
+    }
     @media (max-width: 480px) {
       .cats-grid { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr; }
@@ -310,9 +371,51 @@
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
-<!-- PROGRESS + DOTS para zona horizontal -->
+<!-- PROGRESS + DOTS -->
 <div id="hzone-progress"></div>
 <div class="hzone-dots" id="hzoneDots"></div>
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="veiculoModal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-container">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-gallery">
+      <div class="modal-main-photo">
+        <img class="modal-main-img" id="modalMainImg" src="" alt="Foto do veículo">
+        <button class="modal-nav prev" onclick="navPhoto(-1)">&#8249;</button>
+        <button class="modal-nav next" onclick="navPhoto(1)">&#8250;</button>
+        <div class="modal-photo-counter">
+          <span id="modalPhotoIdx">1</span> / <span id="modalPhotoTotal">1</span>
+        </div>
+      </div>
+      <div class="modal-thumbs" id="modalThumbs"></div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-ano-badge" id="modalAnoBadge">2024/2024</div>
+      <div class="modal-brand-el" id="modalBrandEl"></div>
+      <div class="modal-model-el" id="modalModelEl"></div>
+      <div class="modal-versao-el" id="modalVersaoEl"></div>
+      <hr class="modal-divider">
+      <div class="modal-specs-grid">
+        <div class="modal-spec"><span class="modal-spec-label">Quilometragem</span><span class="modal-spec-val" id="modalKmEl">–</span></div>
+        <div class="modal-spec"><span class="modal-spec-label">Câmbio</span><span class="modal-spec-val" id="modalCambioEl">–</span></div>
+        <div class="modal-spec"><span class="modal-spec-label">Combustível</span><span class="modal-spec-val" id="modalCombEl">–</span></div>
+        <div class="modal-spec"><span class="modal-spec-label">Ano</span><span class="modal-spec-val" id="modalAnoEl">–</span></div>
+      </div>
+      <div class="modal-price-block">
+        <div class="modal-price-label">Preço</div>
+        <div class="modal-price-val" id="modalPrecoEl">–</div>
+      </div>
+      <div class="modal-actions">
+        <a class="modal-wpp-btn" id="modalWppBtn" href="#" target="_blank">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Tenho Interesse — WhatsApp
+        </a>
+        <div class="modal-codigo" id="modalCodigoEl"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav id="navbar">
@@ -330,9 +433,7 @@
   <div class="nav-hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
 
-<!-- ══════════════════════════════
-     V1: HERO (VERTICAL)
-══════════════════════════════ -->
+<!-- HERO -->
 <section class="v-section">
   <div class="hero-wrap">
     <div class="hero-bg" id="heroBg"></div>
@@ -340,11 +441,7 @@
     <div class="hero-stripe"></div>
     <div class="hero-content">
       <div class="hero-tag">São João de Meriti · Rio de Janeiro</div>
-      <h1>
-        SEU PRÓXIMO<br>
-        <span>CARRO</span><br>
-        <span class="out">ESTÁ AQUI.</span>
-      </h1>
+      <h1>SEU PRÓXIMO<br><span>CARRO</span><br><span class="out">ESTÁ AQUI.</span></h1>
       <p class="hero-sub">Estoque premium revisado, garantia real e financiamento aprovado em até 60× — 100% pelo WhatsApp, sem burocracia.</p>
       <div class="hero-actions">
         <a href="estoque.html" class="btn-orange">
@@ -363,10 +460,7 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════
-     HORIZONTAL SCROLL ZONE
-     (Estoque → Financiamento → Instagram)
-══════════════════════════════ -->
+<!-- HORIZONTAL SCROLL ZONE -->
 <div id="hzone-driver">
   <div id="hzone-sticky">
     <div id="hzone-track">
@@ -412,14 +506,12 @@
             <div class="fin-right-num">60</div>
             <div class="fin-right-unit">VEZES</div>
             <p class="fin-right-desc">As melhores taxas do mercado. Aprovação em minutos diretamente pelo WhatsApp.</p>
-            <div class="fin-right-cta">
-              <a href="https://wa.me/5521973970330?text=Olá!%20Quero%20simular%20financiamento." target="_blank" class="btn-white">Simular Agora</a>
-            </div>
+            <div class="fin-right-cta"><a href="https://wa.me/5521973970330?text=Olá!%20Quero%20simular%20financiamento." target="_blank" class="btn-white">Simular Agora</a></div>
           </div>
         </div>
       </div>
 
-      <!-- HP3: INSTAGRAM / GARAGEM -->
+      <!-- HP3: INSTAGRAM -->
       <div class="hpanel hp-insta">
         <div class="insta-inner">
           <div class="insta-header">
@@ -432,55 +524,29 @@
               Seguir @tk.veiculosrj
             </a>
           </div>
-          <div class="insta-grid" id="instaGrid">
-            <!-- Posts preenchidos via JS com fotos do AutoCerto -->
-          </div>
+          <div class="insta-grid" id="instaGrid"></div>
         </div>
       </div>
 
-    </div><!-- /hzone-track -->
-  </div><!-- /hzone-sticky -->
-</div><!-- /hzone-driver -->
+    </div>
+  </div>
+</div>
 
-<!-- ══════════════════════════════
-     V2: CATEGORIAS (VERTICAL)
-══════════════════════════════ -->
+<!-- CATEGORIAS -->
 <section class="v-section cats-section">
   <div class="cats-header">
     <p class="sec-label">Temos para todos os perfis</p>
     <h2 class="sec-title" style="font-family:'Bebas Neue';font-size:clamp(28px,4vw,48px)">O CARRO CERTO<br>PARA VOCÊ.</h2>
   </div>
   <div class="cats-grid">
-    <div class="cat-item">
-      <div class="cat-icon">🚗</div>
-      <div class="cat-name">Compactos</div>
-      <div class="cat-examples">C3, Mobi, Ka, Up</div>
-      <p class="cat-desc">Econômicos, ágeis e perfeitos para o dia a dia. Ótimo custo-benefício e fáceis de financiar.</p>
-    </div>
-    <div class="cat-item">
-      <div class="cat-icon">🚙</div>
-      <div class="cat-name">SUVs & Picapes</div>
-      <div class="cat-examples">EcoSport, Ranger, Duster</div>
-      <p class="cat-desc">Versatilidade, espaço e potência para quem não abre mão de conforto e robustez.</p>
-    </div>
-    <div class="cat-item">
-      <div class="cat-icon">🏎️</div>
-      <div class="cat-name">Premium</div>
-      <div class="cat-examples">Corolla, Range Rover</div>
-      <p class="cat-desc">Veículos premium revisados com padrão de excelência. Sofisticação ao alcance do seu bolso.</p>
-    </div>
-    <div class="cat-item">
-      <div class="cat-icon">🏍️</div>
-      <div class="cat-name">Motos</div>
-      <div class="cat-examples">BMW GS, XMAX 250</div>
-      <p class="cat-desc">Motos premium revisadas e com garantia. Do urbano ao aventureiro — temos para todos.</p>
-    </div>
+    <div class="cat-item"><div class="cat-icon">🚗</div><div class="cat-name">Compactos</div><div class="cat-examples">C3, Mobi, Ka, Up</div><p class="cat-desc">Econômicos, ágeis e perfeitos para o dia a dia. Ótimo custo-benefício e fáceis de financiar.</p></div>
+    <div class="cat-item"><div class="cat-icon">🚙</div><div class="cat-name">SUVs & Picapes</div><div class="cat-examples">EcoSport, Ranger, Duster</div><p class="cat-desc">Versatilidade, espaço e potência para quem não abre mão de conforto e robustez.</p></div>
+    <div class="cat-item"><div class="cat-icon">🏎️</div><div class="cat-name">Premium</div><div class="cat-examples">Corolla, Range Rover</div><p class="cat-desc">Veículos premium revisados com padrão de excelência. Sofisticação ao alcance do seu bolso.</p></div>
+    <div class="cat-item"><div class="cat-icon">🏍️</div><div class="cat-name">Motos</div><div class="cat-examples">BMW GS, XMAX 250</div><p class="cat-desc">Motos premium revisadas e com garantia. Do urbano ao aventureiro — temos para todos.</p></div>
   </div>
 </section>
 
-<!-- ══════════════════════════════
-     V3: DEPOIMENTOS + FAQ (VERTICAL)
-══════════════════════════════ -->
+<!-- DEPOIMENTOS + FAQ -->
 <section class="v-section dep-faq-section">
   <div class="dep-side">
     <p class="sec-label">Quem já comprou</p>
@@ -508,33 +574,16 @@
     <p class="sec-label">Dúvidas frequentes</p>
     <h2 class="sec-title" style="font-family:'Bebas Neue';font-size:clamp(28px,4vw,48px)">PERGUNTAS<br>FREQUENTES</h2>
     <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Vocês aceitam meu carro na troca? <span class="faq-icon">+</span></button>
-        <p class="faq-a">Sim. Avaliamos seu veículo online e o valor é abatido direto na entrada ou financiamento. Processo sem compromisso, feito pelo WhatsApp.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Como funciona o financiamento? <span class="faq-icon">+</span></button>
-        <p class="faq-a">Trabalhamos com BV, Pan e outros bancos. Você simula pelo WhatsApp com dados básicos e recebe resposta em minutos. Parcelamos em até 60×.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Os veículos têm garantia? <span class="faq-icon">+</span></button>
-        <p class="faq-a">Sim. Todos os veículos passam por revisão completa e saem com garantia inclusa, sem custo adicional.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Onde fica a TK Veículos? <span class="faq-icon">+</span></button>
-        <p class="faq-a">Estamos na Av. Automóvel Clube, 518 — Vilar dos Teles, São João de Meriti - RJ. Seg–Sex das 8h às 18h, Sáb das 9h às 14h.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">Consigo fechar sem ir à loja? <span class="faq-icon">+</span></button>
-        <p class="faq-a">Sim. Todo o processo de escolha, simulação e aprovação pode ser feito pelo WhatsApp. Você só vai à loja buscar o carro.</p>
-      </div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Vocês aceitam meu carro na troca? <span class="faq-icon">+</span></button><p class="faq-a">Sim. Avaliamos seu veículo online e o valor é abatido direto na entrada ou financiamento. Processo sem compromisso, feito pelo WhatsApp.</p></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Como funciona o financiamento? <span class="faq-icon">+</span></button><p class="faq-a">Trabalhamos com BV, Pan e outros bancos. Você simula pelo WhatsApp com dados básicos e recebe resposta em minutos. Parcelamos em até 60×.</p></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Os veículos têm garantia? <span class="faq-icon">+</span></button><p class="faq-a">Sim. Todos os veículos passam por revisão completa e saem com garantia inclusa, sem custo adicional.</p></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Onde fica a TK Veículos? <span class="faq-icon">+</span></button><p class="faq-a">Estamos na Av. Automóvel Clube, 518 — Vilar dos Teles, São João de Meriti - RJ. Seg–Sex das 8h às 18h, Sáb das 9h às 14h.</p></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Consigo fechar sem ir à loja? <span class="faq-icon">+</span></button><p class="faq-a">Sim. Todo o processo de escolha, simulação e aprovação pode ser feito pelo WhatsApp. Você só vai à loja buscar o carro.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════
-     V4: CTA FINAL (VERTICAL)
-══════════════════════════════ -->
+<!-- CTA FINAL -->
 <section class="v-section cta-final" id="contato">
   <div class="cta-final-text">
     <h2>A SUA MELHOR ESCOLHA É AQUI.<br>VEM PRA TK.</h2>
@@ -553,36 +602,16 @@
       <img class="footer-logo" src="https://tkveiculos.com.br/Content/images/logo.png" alt="TK Veículos" onerror="this.style.display='none'">
       <p class="footer-tagline">Carros revisados com garantia.<br>Financiamento sem burocracia.<br>São João de Meriti há mais de 10 anos.</p>
     </div>
-    <div class="footer-col">
-      <h4>Menu</h4>
-      <ul>
-        <li><a href="index.html">Início</a></li>
-        <li><a href="estoque.html">Estoque</a></li>
-        <li><a href="#financiamento">Financiamento</a></li>
-        <li><a href="https://wa.me/5521973970330" target="_blank">WhatsApp</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Funcionamento</h4>
-      <p>Seg–Sex: 8h às 18h<br>Sábado: 9h às 14h<br>Domingo: Fechado</p>
-    </div>
-    <div class="footer-col">
-      <h4>Contato</h4>
-      <p>Av. Automóvel Clube, 518<br>Vilar dos Teles<br>São João de Meriti - RJ<br><br>(21) 2209-5342<br>(21) 97397-0330</p>
-    </div>
+    <div class="footer-col"><h4>Menu</h4><ul><li><a href="index.html">Início</a></li><li><a href="estoque.html">Estoque</a></li><li><a href="#financiamento">Financiamento</a></li><li><a href="https://wa.me/5521973970330" target="_blank">WhatsApp</a></li></ul></div>
+    <div class="footer-col"><h4>Funcionamento</h4><p>Seg–Sex: 8h às 18h<br>Sábado: 9h às 14h<br>Domingo: Fechado</p></div>
+    <div class="footer-col"><h4>Contato</h4><p>Av. Automóvel Clube, 518<br>Vilar dos Teles<br>São João de Meriti - RJ<br><br>(21) 2209-5342<br>(21) 97397-0330</p></div>
   </div>
   <div class="footer-bottom">
     <p class="footer-copy">© 2026 TK Veículos — Todos os direitos reservados.</p>
     <div class="footer-social">
-      <a href="https://www.instagram.com/tk.veiculosrj/" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-      <a href="https://www.facebook.com/tk.veiculosrj" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      </a>
-      <a href="https://wa.me/5521973970330" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      </a>
+      <a href="https://www.instagram.com/tk.veiculosrj/" target="_blank"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+      <a href="https://www.facebook.com/tk.veiculosrj" target="_blank"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+      <a href="https://wa.me/5521973970330" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
     </div>
   </div>
 </footer>
@@ -591,14 +620,156 @@
 /* ════ CONFIG ════ */
 const CONFIG = { webhookEstoque: 'https://apin8n.lv-mktdeconversa.com/webhook/estoque-tk', whatsapp: '5521973970330', codigoUnidade: 1963 };
 
-/* ════ DEMO VEHICLES (reais do site deles) ════ */
+/* ════ DEMO ════ */
 const DEMO = [
-  { CodigoVeiculo:2779601, Marca:'CITROËN', Modelo:'C3',          Versao:'1.0 Firefly Flex Live Pack Manual', AnoFab:2023, AnoMod:2024, KM:30000,  Preco:75999,  foto:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg' },
-  { CodigoVeiculo:3691198, Marca:'TOYOTA',  Modelo:'Corolla',     Versao:'2.0 XEI 16V Flex 4P Automático',   AnoFab:2017, AnoMod:2018, KM:80000,  Preco:109999, foto:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg' },
-  { CodigoVeiculo:4542618, Marca:'CHEVROLET',Modelo:'Onix Plus',  Versao:'1.0 Turbo Flex Premier Automático', AnoFab:2024, AnoMod:2024, KM:24000,  Preco:98999,  foto:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg' },
+  { CodigoVeiculo:2779601, Marca:'CITROËN', Modelo:'C3', Versao:'1.0 Firefly Flex Live Pack Manual', AnoFab:2023, AnoMod:2024, KM:30000, Preco:75999, Cambio:'Manual', Combustivel:'Flex', foto:'https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg', fotos:['https://www.autocerto.com/fotos/1963/2779601/1_064546.jpg'] },
+  { CodigoVeiculo:3691198, Marca:'TOYOTA', Modelo:'Corolla', Versao:'2.0 XEI 16V Flex 4P Automático', AnoFab:2017, AnoMod:2018, KM:80000, Preco:109999, Cambio:'Automático', Combustivel:'Flex', foto:'https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg', fotos:['https://www.autocerto.com/fotos/1963/3691198/1_104058.jpg'] },
+  { CodigoVeiculo:4542618, Marca:'CHEVROLET', Modelo:'Onix Plus', Versao:'1.0 Turbo Flex Premier Automático', AnoFab:2024, AnoMod:2024, KM:24000, Preco:98999, Cambio:'Automático', Combustivel:'Flex', foto:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg', fotos:['https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg'] },
 ];
 
-/* Fotos para seção Instagram (fotos reais do estoque) */
+/* ════ MODAL STATE ════ */
+let veiculoMap     = {};
+let currentFotos   = [];
+let currentFotoIdx = 0;
+
+/* ════════════════════════════
+   MODAL
+════════════════════════════ */
+function openModal(codigo) {
+  const v = veiculoMap[codigo];
+  if (!v) return;
+
+  currentFotos   = (v.fotos && Array.isArray(v.fotos) && v.fotos.length > 0) ? v.fotos : [v.foto];
+  currentFotoIdx = 0;
+
+  const mainImg = document.getElementById('modalMainImg');
+  mainImg.src = currentFotos[0];
+  mainImg.classList.remove('fading');
+  document.getElementById('modalPhotoIdx').textContent   = 1;
+  document.getElementById('modalPhotoTotal').textContent = currentFotos.length;
+
+  const thumbsEl = document.getElementById('modalThumbs');
+  thumbsEl.innerHTML = currentFotos.map((f, i) => `
+    <div class="modal-thumb ${i===0?'active':''}" onclick="selectThumb(${i})">
+      <img src="${f}" alt="Foto ${i+1}" loading="lazy" onerror="this.parentElement.style.display='none'">
+    </div>`).join('');
+
+  document.querySelector('#veiculoModal .modal-nav.prev').style.display = currentFotos.length > 1 ? 'flex' : 'none';
+  document.querySelector('#veiculoModal .modal-nav.next').style.display = currentFotos.length > 1 ? 'flex' : 'none';
+
+  document.getElementById('modalAnoBadge').textContent = `${v.AnoFab}/${v.AnoMod}`;
+  document.getElementById('modalBrandEl').textContent  = v.Marca;
+  document.getElementById('modalModelEl').textContent  = v.Modelo;
+  document.getElementById('modalVersaoEl').textContent = v.Versao;
+  document.getElementById('modalAnoEl').textContent    = `${v.AnoFab}/${v.AnoMod}`;
+  document.getElementById('modalKmEl').textContent     = v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I';
+  document.getElementById('modalCambioEl').textContent = v.Cambio || 'N/I';
+  document.getElementById('modalCombEl').textContent   = v.Combustivel || 'N/I';
+  document.getElementById('modalPrecoEl').textContent  = v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta';
+  document.getElementById('modalCodigoEl').textContent = `Código: #${v.CodigoVeiculo}`;
+
+  const msg = [
+    `Olá! Tenho interesse no veículo abaixo:`,``,
+    `🚗 *${v.Marca} ${v.Modelo}*`,
+    `📋 ${v.Versao}`,
+    `📅 Ano: ${v.AnoFab}/${v.AnoMod}`,
+    `📍 KM: ${v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I'}`,
+    `⚙️ Câmbio: ${v.Cambio || 'N/I'}`,
+    `⛽ Combustível: ${v.Combustivel || 'N/I'}`,
+    `💰 Preço: ${v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta'}`,
+    `🔖 Código: #${v.CodigoVeiculo}`,``,
+    `Poderia me dar mais informações?`
+  ].join('\n');
+
+  document.getElementById('modalWppBtn').href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  document.getElementById('veiculoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('veiculoModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('veiculoModal')) closeModal();
+}
+
+function navPhoto(dir) {
+  selectThumb((currentFotoIdx + dir + currentFotos.length) % currentFotos.length);
+}
+
+function selectThumb(idx) {
+  currentFotoIdx = idx;
+  const mainImg = document.getElementById('modalMainImg');
+  mainImg.classList.add('fading');
+  setTimeout(() => { mainImg.src = currentFotos[idx]; mainImg.classList.remove('fading'); }, 180);
+  document.querySelectorAll('#veiculoModal .modal-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.getElementById('modalPhotoIdx').textContent = idx + 1;
+  const thumbEl = document.querySelectorAll('#veiculoModal .modal-thumb')[idx];
+  if (thumbEl) thumbEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('veiculoModal').classList.contains('open')) return;
+  if (e.key === 'Escape')     closeModal();
+  if (e.key === 'ArrowLeft')  navPhoto(-1);
+  if (e.key === 'ArrowRight') navPhoto(1);
+});
+
+/* ════ CARD ════ */
+function buildCard(v) {
+  const km    = v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I';
+  const preco = v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta';
+  const msg = [
+    `Olá! Tenho interesse no veículo abaixo:`,``,
+    `🚗 *${v.Marca} ${v.Modelo}*`,
+    `📋 ${v.Versao}`,
+    `📅 Ano: ${v.AnoFab}/${v.AnoMod}`,
+    `📍 KM: ${v.KM ? v.KM.toLocaleString('pt-BR') + ' km' : 'N/I'}`,
+    `⚙️ Câmbio: ${v.Cambio || 'N/I'}`,
+    `⛽ Combustível: ${v.Combustivel || 'N/I'}`,
+    `💰 Preço: ${v.Preco ? 'R$ ' + v.Preco.toLocaleString('pt-BR') : 'Sob consulta'}`,
+    `🔖 Código: #${v.CodigoVeiculo}`,``,
+    `Poderia me dar mais informações?`
+  ].join('\n');
+  const wppUrl = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  return `<div class="card" onclick="handleCardClick(event, ${v.CodigoVeiculo})">
+    <div class="card-img-wrap">
+      <img class="card-img" src="${v.foto}" alt="${v.Marca} ${v.Modelo}" loading="lazy">
+      <span class="card-badge">${v.AnoFab}/${v.AnoMod}</span>
+      <span class="card-km">${km}</span>
+      <div class="card-zoom-hint"><div class="card-zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="11" cy="11" r="6"/><line x1="16" y1="16" x2="21" y2="21"/></svg></div></div>
+    </div>
+    <div class="card-body">
+      <div class="card-brand">${v.Marca}</div>
+      <div class="card-model">${v.Modelo}</div>
+      <div class="card-versao">${v.Versao}</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-price">${preco}</div>
+      <a href="${wppUrl}" target="_blank" class="card-wpp" onclick="event.stopPropagation()">Tenho Interesse</a>
+    </div>
+  </div>`;
+}
+
+function handleCardClick(event, codigo) {
+  if (event.target.closest('.card-wpp')) return;
+  openModal(codigo);
+}
+
+async function loadDestaques() {
+  let v = [];
+  try { const r = await fetch(CONFIG.webhookEstoque); const d = await r.json(); v = Array.isArray(d)?d:(d.veiculos||[]); } catch(e){}
+  if (!v.length) v = DEMO;
+
+  // Registra no mapa global para o modal
+  v.forEach(item => { veiculoMap[item.CodigoVeiculo] = item; });
+
+  document.getElementById('destaquesGrid').innerHTML = v.slice(0,3).map(buildCard).join('');
+}
+
+/* ════ INSTAGRAM ════ */
 const INSTA_FOTOS = [
   { src:'https://www.autocerto.com/fotos/1963/3640088/1_105630.jpg', label:'Range Rover Evoque' },
   { src:'https://www.autocerto.com/fotos/1963/4352167/5_054240selo.jpg', label:'Ford Ranger 3.2' },
@@ -610,60 +781,22 @@ const INSTA_FOTOS = [
   { src:'https://www.autocerto.com/fotos/1963/4542618/3_032320.jpg', label:'Onix Premier' },
 ];
 
-function buildCard(v) {
-  const km = v.KM ? v.KM.toLocaleString('pt-BR')+' km' : 'N/I';
-  const preco = v.Preco ? 'R$ '+v.Preco.toLocaleString('pt-BR') : 'Sob consulta';
-  const txt = encodeURIComponent('Olá! Tenho interesse no '+v.Marca+' '+v.Modelo+' '+v.AnoFab+'/'+v.AnoMod+'. Cód: '+v.CodigoVeiculo);
-  return `<div class="card">
-    <div class="card-img-wrap">
-      <img class="card-img" src="${v.foto}" alt="${v.Marca} ${v.Modelo}" loading="lazy">
-      <span class="card-badge">${v.AnoFab}/${v.AnoMod}</span>
-      <span class="card-km">${km}</span>
-    </div>
-    <div class="card-body">
-      <div class="card-brand">${v.Marca}</div>
-      <div class="card-model">${v.Modelo}</div>
-      <div class="card-versao">${v.Versao}</div>
-    </div>
-    <div class="card-footer">
-      <div class="card-price">${preco}</div>
-      <a href="https://wa.me/${CONFIG.whatsapp}?text=${txt}" target="_blank" class="card-wpp">Tenho Interesse</a>
-    </div>
-  </div>`;
-}
-
-async function loadDestaques() {
-  let v = [];
-  if (CONFIG.webhookEstoque !== 'WEBHOOK_N8N_AQUI') {
-    try { const r = await fetch(CONFIG.webhookEstoque); const d = await r.json(); v = Array.isArray(d)?d:(d.veiculos||[]); } catch(e){}
-  }
-  if (!v.length) v = DEMO;
-  document.getElementById('destaquesGrid').innerHTML = v.slice(0,3).map(buildCard).join('');
-}
-
 function buildInstaGrid() {
-  const grid = document.getElementById('instaGrid');
-  grid.innerHTML = INSTA_FOTOS.map(p => `
+  document.getElementById('instaGrid').innerHTML = INSTA_FOTOS.map(p => `
     <a class="insta-post" href="https://www.instagram.com/tk.veiculosrj/" target="_blank">
       <img src="${p.src}" alt="${p.label}" loading="lazy">
-      <div class="insta-post-overlay">
-        <div class="insta-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
+      <div class="insta-post-overlay"><div class="insta-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
       <div class="insta-post-label">${p.label}</div>
     </a>`).join('');
 }
 
-/* ════ MIXED SCROLL ENGINE ════
-   Vertical → Horizontal (3 panels) → Vertical
-*/
+/* ════ SCROLL HORIZONTAL ════ */
 const isMobile = () => window.innerWidth <= 900;
 const track   = document.getElementById('hzone-track');
 const driver  = document.getElementById('hzone-driver');
-const sticky  = document.getElementById('hzone-sticky');
 const progBar = document.getElementById('hzone-progress');
 const dotsEl  = document.getElementById('hzoneDots');
-const NPANELS = 3; // number of horizontal panels
-
+const NPANELS = 3;
 let targetX = 0, curX = 0, raf = null;
 
 function setupDots() {
@@ -690,42 +823,27 @@ function lerp(a, b, t) { return a + (b-a)*t; }
 function tick() {
   curX = lerp(curX, targetX, 0.1);
   track.style.transform = `translateX(${-curX}px)`;
-  if (Math.abs(curX - targetX) > 0.5) {
-    raf = requestAnimationFrame(tick);
-  } else {
-    curX = targetX;
-    track.style.transform = `translateX(${-curX}px)`;
-    raf = null;
-  }
+  if (Math.abs(curX - targetX) > 0.5) { raf = requestAnimationFrame(tick); }
+  else { curX = targetX; track.style.transform = `translateX(${-curX}px)`; raf = null; }
 }
 
 function onScroll() {
   if (isMobile()) return;
-
   const scrollY   = window.scrollY;
   const driverTop = driver.offsetTop;
-  const driverH   = driver.offsetHeight; // NPANELS * 100vh
+  const driverH   = driver.offsetHeight;
   const winH      = window.innerHeight;
-  const maxTravel = driverH - winH;       // scroll range inside the zone
-
-  // progress within horizontal zone (0..1)
+  const maxTravel = driverH - winH;
   const localScroll = scrollY - driverTop;
   const progress    = Math.max(0, Math.min(1, localScroll / maxTravel));
-
   const maxX  = (NPANELS - 1) * window.innerWidth;
   targetX = progress * maxX;
-
   const panelIdx = Math.min(NPANELS-1, Math.round(targetX / window.innerWidth));
   updateDots(panelIdx);
-
-  // progress bar width
   progBar.style.width = (progress * 100) + '%';
-
-  // show/hide dots & progressbar only when inside zone
   const inZone = localScroll >= 0 && localScroll <= maxTravel;
   progBar.style.display = inZone ? 'block' : 'none';
   dotsEl.style.display  = inZone ? 'flex'  : 'none';
-
   if (!raf) raf = requestAnimationFrame(tick);
 }
 
@@ -751,9 +869,8 @@ buildInstaGrid();
 setDriverHeight();
 setupDots();
 document.getElementById('heroBg').classList.add('loaded');
-
 window.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', () => { setDriverHeight(); }, { passive: true });
+window.addEventListener('resize', () => setDriverHeight(), { passive: true });
 window.toggleMenu = () => document.getElementById('navLinks').classList.toggle('open');
 </script>
 </body>
