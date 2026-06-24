@@ -348,6 +348,14 @@ a{color:inherit}
 .cnh-warn svg{flex:none;width:18px;height:18px;margin-top:1px}
 .form-actions{margin-top:22px;display:flex;flex-wrap:wrap;gap:13px;align-items:center}
 .form-foot{margin-top:14px;font-size:.78rem;color:#8aa0d4;line-height:1.5}
+.cep-status{font-size:.78rem;margin-top:1px;min-height:1em;color:#8aa0d4;line-height:1.4}
+.cep-status.loading{color:#ffd89a}
+.cep-status.ok{color:#7ee0a6}
+.cep-status.err{color:#ffb4a0}
+.msg-preview{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-left:4px solid var(--red);border-radius:14px;padding:15px 18px;margin-top:22px}
+.msg-preview .mp-head{display:flex;align-items:center;gap:9px;font-family:"Archivo";font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:#aebbdd;margin-bottom:10px}
+.msg-preview .mp-head svg{width:18px;height:18px;color:#25d366;flex:none}
+.msg-preview pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:"Inter",system-ui,sans-serif;font-size:.88rem;line-height:1.55;color:#e8edf8}
 
 /* ---------- TRANSPARÊNCIA ---------- */
 .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -625,8 +633,29 @@ a{color:inherit}
         <input id="fNome" type="text" placeholder="Como podemos te chamar?" autocomplete="name">
       </div>
       <div class="fg">
-        <label for="fLocal">Bairro ou cidade</label>
-        <input id="fLocal" type="text" placeholder="Ex.: Centro, Nova Iguaçu" autocomplete="address-level2">
+        <label for="fCep">CEP</label>
+        <input id="fCep" type="text" inputmode="numeric" placeholder="00000-000" autocomplete="postal-code" maxlength="9">
+        <span class="cep-status" id="cepStatus">Digite o CEP para preencher o endereço automaticamente.</span>
+      </div>
+      <div class="fg full">
+        <label for="fEndereco">Endereço (rua / avenida)</label>
+        <input id="fEndereco" type="text" placeholder="Preenchido pelo CEP — pode ajustar se precisar" autocomplete="address-line1">
+      </div>
+      <div class="fg">
+        <label for="fBairro">Bairro</label>
+        <input id="fBairro" type="text" placeholder="Preenchido pelo CEP" autocomplete="address-level3">
+      </div>
+      <div class="fg">
+        <label for="fCidade">Cidade / UF</label>
+        <input id="fCidade" type="text" placeholder="Preenchido pelo CEP" autocomplete="address-level2">
+      </div>
+      <div class="fg">
+        <label for="fNumero">Número</label>
+        <input id="fNumero" type="text" inputmode="numeric" placeholder="Ex.: 231" autocomplete="off">
+      </div>
+      <div class="fg">
+        <label for="fCompl">Complemento <span style="text-transform:none;letter-spacing:0;color:#7e8cb3;font-weight:500">(opcional)</span></label>
+        <input id="fCompl" type="text" placeholder="Ex.: casa 2, apto 101, fundos" autocomplete="address-line2">
       </div>
 
       <div class="fg full">
@@ -652,6 +681,11 @@ a{color:inherit}
           <span>A CNH categoria A é obrigatória para a retirada. Sem problema: você pode enviar mesmo assim <b>só para consultar valores</b> e nosso time te orienta.</span>
         </div>
       </div>
+    </div>
+
+    <div class="msg-preview" aria-live="polite">
+      <div class="mp-head"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.9 4.43-9.9 9.9 0 1.74.46 3.45 1.32 4.95L2 22l5.3-1.38a9.86 9.86 0 0 0 4.73 1.2h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-7A9.82 9.82 0 0 0 12.04 2Z"/></svg> Resumo que vai pro WhatsApp</div>
+      <pre id="msgPreview"></pre>
     </div>
 
     <div class="form-actions">
@@ -863,6 +897,7 @@ function update(){
     if(!state.plano) falta.push("plano");
     $("#avancarHint").textContent = "Escolha " + falta.join(", ") + " para avançar.";
   }
+  updatePreview();
 }
 
 /* ---- avançar para reserva ---- */
@@ -878,6 +913,7 @@ $$("#finalidadeList .radio-opt").forEach(o=>{
     $$("#finalidadeList .radio-opt").forEach(x=>x.classList.remove("on"));
     o.classList.add("on");
     state.finalidade = o.dataset.val;
+    updatePreview();
   });
 });
 /* ---- FORM: cnh ---- */
@@ -887,6 +923,7 @@ function toggleCnh(){
   cnhBox.classList.toggle("on", state.cnh);
   cnhBox.setAttribute("aria-checked", state.cnh);
   cnhWarn.classList.toggle("show", !state.cnh);
+  updatePreview();
 }
 cnhBox.addEventListener("click",toggleCnh);
 cnhBox.addEventListener("keydown",e=>{ if(e.key===" "||e.key==="Enter"){e.preventDefault();toggleCnh();} });
@@ -900,7 +937,7 @@ function buildReservaMsg(){
   L.push("*Nova reserva — Locação Grupo LT* 🏍️");
   L.push("");
   L.push("👤 Nome: " + ($("#fNome").value.trim() || "(não informado)"));
-  L.push("📍 Local: " + ($("#fLocal").value.trim() || "(não informado)"));
+  L.push("📍 Endereço: " + getEndereco());
   L.push("🎯 Finalidade: " + (state.finalidade || "(não informada)"));
   L.push("🪪 CNH A: " + (state.cnh ? "Sim, possuo" : "Ainda não / quero consultar valores"));
   L.push("");
@@ -931,6 +968,63 @@ $("#enviarBtn").addEventListener("click",()=>{
   }
   window.open(waLink(buildReservaMsg()), "_blank");
 });
+
+/* ---- CEP (ViaCEP) + endereço ---- */
+function maskCep(v){ v = v.replace(/\D/g,"").slice(0,8); if(v.length>5) v = v.slice(0,5)+"-"+v.slice(5); return v; }
+function getEndereco(){
+  const end = $("#fEndereco").value.trim();
+  const bairro = $("#fBairro").value.trim();
+  const cidade = $("#fCidade").value.trim();
+  const num = $("#fNumero").value.trim();
+  const compl = $("#fCompl").value.trim();
+  const cep = $("#fCep").value.trim();
+  let l1 = end;
+  if(num) l1 += (l1?", ":"") + "nº " + num;
+  if(compl) l1 += (l1?" - ":"") + compl;
+  const parts = [];
+  if(l1) parts.push(l1);
+  if(bairro) parts.push(bairro);
+  if(cidade) parts.push(cidade);
+  let s = parts.join(" — ");
+  if(cep) s += (s?" ":"") + "(CEP " + cep + ")";
+  return s || "(não informado)";
+}
+const cepInput = $("#fCep"), cepStatus = $("#cepStatus");
+cepInput.addEventListener("input", e=>{
+  e.target.value = maskCep(e.target.value);
+  const digits = e.target.value.replace(/\D/g,"");
+  if(digits.length===8){ buscaCep(digits); }
+  else { cepStatus.textContent = "Digite o CEP para preencher o endereço automaticamente."; cepStatus.className = "cep-status"; }
+  updatePreview();
+});
+async function buscaCep(cep){
+  cepStatus.textContent = "Buscando endereço…";
+  cepStatus.className = "cep-status loading";
+  try{
+    const r = await fetch("https://viacep.com.br/ws/"+cep+"/json/");
+    if(!r.ok) throw new Error("http");
+    const d = await r.json();
+    if(d.erro) throw new Error("nao encontrado");
+    $("#fEndereco").value = d.logradouro || "";
+    $("#fBairro").value = d.bairro || "";
+    $("#fCidade").value = (d.localidade||"") + (d.uf ? "/"+d.uf : "");
+    cepStatus.textContent = "✓ Endereço encontrado. Agora é só completar o número e o complemento.";
+    cepStatus.className = "cep-status ok";
+    (d.logradouro ? $("#fNumero") : $("#fEndereco")).focus();
+  }catch(err){
+    cepStatus.textContent = "Não encontramos esse CEP. Você pode preencher o endereço manualmente.";
+    cepStatus.className = "cep-status err";
+  }
+  updatePreview();
+}
+
+/* ---- preview ao vivo da mensagem ---- */
+function buildDisplayMsg(){ return buildReservaMsg().replace(/[*_]/g,""); }
+function updatePreview(){ const el = $("#msgPreview"); if(el) el.textContent = buildDisplayMsg(); }
+["fNome","fEndereco","fBairro","fCidade","fNumero","fCompl"].forEach(id=>{
+  const el = $("#"+id); if(el) el.addEventListener("input", updatePreview);
+});
+updatePreview();
 
 /* ---- WhatsApp genéricos ---- */
 const genMsg = "Olá! Vim pela página de locação e quero saber mais sobre alugar uma moto com o Grupo LT.";
